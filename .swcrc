@@ -1,0 +1,16 @@
+{
+    "jsc": {
+      "parser": {
+        "syntax": "typescript",
+        "importAssertions": true
+      },
+      "target": "es2022",
+      "experimental": {
+          "keepImportAssertions": true
+      }
+    },
+    "module": {
+      "type": "es6"
+    },
+    "sourceMaps": false
+}
