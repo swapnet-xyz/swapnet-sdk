@@ -1,6 +1,6 @@
-import { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "../common/interfaces";
-import { IRoutingPlan, TokenOperation } from "../common/routingPlan";
-import { parse } from "./parser";
+import type { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "../common/interfaces.js";
+import type { IRoutingPlan, TokenOperation } from "../common/routingPlan.js";
+import { parse } from "./parser.js";
 
 const apiVersion = 'v1.0'
 export class SwapnetClient {
