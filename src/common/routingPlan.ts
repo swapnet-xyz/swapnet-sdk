@@ -1,11 +1,4 @@
 
-export enum LsType {
-    LimitOrder = 0x00,
-    UniswapV2 = 0x01,
-    UniswapV3 = 0x02,
-    CurveV1 = 0x03,
-    Unknown = 0xff,
-};
 
 export interface LsAccountingModel {
     preCalculation: boolean;     // allow to calculate exact `amountOut` according to `amountIn` before calling `swap`.
@@ -19,9 +12,9 @@ export interface LsAccountingModel {
     // routerAsRecipient: boolean; // always true
 };
   
-export const accountingModelByLsType: Map<LsType, LsAccountingModel> = new Map();
+export const accountingModelByLsType: Map<string, LsAccountingModel> = new Map();
 accountingModelByLsType.set(
-    LsType.LimitOrder,
+    "LimitOrder",
     {
         preCalculation: false,  // avoid to be called in callbacks
         othersAsPayer: false,
@@ -31,7 +24,7 @@ accountingModelByLsType.set(
     }
 );
 accountingModelByLsType.set(
-    LsType.UniswapV2,
+    "UniswapV2",
     {
         preCalculation: true,
         othersAsPayer: true,
@@ -40,7 +33,7 @@ accountingModelByLsType.set(
     }
 );
 accountingModelByLsType.set(
-    LsType.UniswapV3,
+    "UniswapV3",
     {
         preCalculation: false,
         othersAsPayer: true,
@@ -49,7 +42,7 @@ accountingModelByLsType.set(
     }
 );
 accountingModelByLsType.set(
-    LsType.CurveV1,
+    "CurveV1",
     {
         preCalculation: false,
         othersAsPayer: false,
@@ -59,13 +52,11 @@ accountingModelByLsType.set(
 );
 
 export interface LsInfoBase {
-    type: LsType;
+    protocol: string;
     address: string;
-    protocol?: string;
 };
 
 export interface LimitOrderInfo extends LsInfoBase {
-    type: LsType.LimitOrder;
     maker: string;
     makerToken: string;
     takerToken: string;
@@ -76,20 +67,19 @@ export interface LimitOrderInfo extends LsInfoBase {
     signature: string;
 };
 
-export interface UniswapV2Info extends LsInfoBase {
-    type: LsType.UniswapV2;
-};
-
 export interface UniswapV3Info extends LsInfoBase {
-    type: LsType.UniswapV3;
     fee: bigint;
 };
 
-export interface CurveV1Info extends LsInfoBase {
-    type: LsType.CurveV1;
-};
+// export interface UniswapV2Info extends LsInfoBase {
+// };
 
-export type LsInfo = LimitOrderInfo | UniswapV2Info | UniswapV3Info | CurveV1Info | LsInfoBase;
+// export interface CurveV1Info extends LsInfoBase {
+// };
+
+export type LsInfo = LsInfoBase
+    | LimitOrderInfo
+    | UniswapV3Info;
 
 export interface LsSwap {
     fromTokenOp: TokenOperation;

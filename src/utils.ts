@@ -1,5 +1,5 @@
 import { type IRouteInfoInResponse, type IUniswapV3Details, type ILimitOrderDetails, } from "./common/interfaces.js";
-import { LsType, type LsInfo, type LsSwap, type TokenOperation, type TokenOperationNodeType, } from "./common/routingPlan.js";
+import { type LsInfo, type LsSwap, type TokenOperation, type TokenOperationNodeType, } from "./common/routingPlan.js";
 
 
 export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): LsSwap => {
@@ -7,9 +7,8 @@ export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, 
     let lsInfo: LsInfo;
     if (route.name.startsWith('UniswapV2')) {
         lsInfo = {
-            type: LsType.UniswapV2,
-            address: route.address,
             protocol: route.name,
+            address: route.address,
         }
     }
     else if (route.name.startsWith('UniswapV3')) {
@@ -23,25 +22,22 @@ export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, 
         }
 
         lsInfo = {
-            type: LsType.UniswapV3,
-            address: route.address,
             protocol: route.name,
+            address: route.address,
             fee,
         }
     }
     else if (route.name.startsWith('CurveV1')) {
         lsInfo = {
-            type: LsType.CurveV1,
-            address: route.address,
             protocol: route.name,
+            address: route.address,
         }
     }
     else if (route.name.startsWith('Orderbook')) {
         const details = route.details as ILimitOrderDetails;
         lsInfo = {
-            type: LsType.LimitOrder,
+            protocol: "LimitOrder",
             address: details.maker,
-            protocol: route.name,
             maker: details.maker,
             makerToken: details.makerToken,
             takerToken: details.takerToken,
@@ -54,9 +50,8 @@ export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, 
     }
     else {
         lsInfo = {
-            type: LsType.Unknown,
-            address: route.address,
             protocol: route.name,
+            address: route.address,
         }
         // throw new Error(`Invalid route name ${route.name}!`);
     }

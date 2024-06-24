@@ -6,7 +6,7 @@ import UniversalRouter from '@uniswap/universal-router/artifacts/contracts/Unive
 import { Interface } from 'ethers';
 import { CommandType, RoutePlanner } from './routerCommands.js';
 import { CONTRACT_BALANCE, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT } from './constants.js';
-import { accountingModelByLsType, LsType, type TokenOperation, type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
+import { accountingModelByLsType, type TokenOperation, type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
 import { toNodeType } from '../../utils.js';
 
 const universalRouterInterface: Interface = new Interface(UniversalRouter.abi);
@@ -23,7 +23,7 @@ const toCustody = (tokenOp: TokenOperation): boolean => {
     const { fromSwaps, toSwaps, } = tokenOp;
   
     if (nodeType === 'SOURCE') {
-        if (toSwaps.some(t => accountingModelByLsType.get(t.lsInfo.type)!.othersAsPayer === false)) {
+        if (toSwaps.some(t => accountingModelByLsType.get(t.lsInfo.protocol)!.othersAsPayer === false)) {
             return true;
         }
         return false;
@@ -32,7 +32,7 @@ const toCustody = (tokenOp: TokenOperation): boolean => {
         if (fromSwaps.length > 1) {
           return true;
         }
-        if (fromSwaps.some(f => accountingModelByLsType.get(f.lsInfo.type)!.othersAsRecipient === false)) {
+        if (fromSwaps.some(f => accountingModelByLsType.get(f.lsInfo.protocol)!.othersAsRecipient === false)) {
           return true;
         }
         return false;
@@ -73,15 +73,15 @@ export const optimizeAndEncodeForUniswap = (
                 amountIn = CONTRACT_BALANCE;
             }
 
-            if (toSwap.lsInfo.type === LsType.UniswapV2 || toSwap.lsInfo.type === LsType.UniswapV3) {
+            if (toSwap.lsInfo.protocol === "UniswapV2" || toSwap.lsInfo.protocol === "UniswapV3") {
                 let commandType: CommandType;
                 let path: string | string [];
-                if (toSwap.lsInfo.type === LsType.UniswapV2) {
+                if (toSwap.lsInfo.protocol === "UniswapV2") {
                     commandType = CommandType.V2_SWAP_EXACT_IN;
                     path = [ fromToken, toToken ]
                 }
                 else {
-                    // if (toSwap.lsInfo.type === LsType.UniswapV3)
+                    // if (toSwap.lsInfo.protocol === "UniswapV3")
                     const lsInfo = toSwap.lsInfo as UniswapV3Info;
                     commandType = CommandType.V3_SWAP_EXACT_IN;
                     path = encodeV3RouteToPath(fromToken, toToken, Number(lsInfo.fee));
@@ -96,7 +96,7 @@ export const optimizeAndEncodeForUniswap = (
                 ]);
                 // console.log(`V2V3_SWAP_EXACT_IN: ${recipientIsUser ? recipient : ROUTER_AS_RECIPIENT}, ${amountIn}, ${minAmountOut}, ${payerIsUser}, ${path}`);
             }
-            else if (toSwap.lsInfo.type === LsType.CurveV1) {
+            else if (toSwap.lsInfo.protocol === "CurveV1") {
                 if (payerIsUser) {
                     planner.addCommand(CommandType.PERMIT2_TRANSFER_FROM, [
                         fromToken,
@@ -123,7 +123,7 @@ export const optimizeAndEncodeForUniswap = (
                 }
             }
             else {
-                throw new Error(`Unknown swap type ${toSwap.lsInfo.type}!`);
+                throw new Error(`Unknown protocol ${toSwap.lsInfo.protocol}!`);
             }
         });
     });
