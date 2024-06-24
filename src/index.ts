@@ -3,6 +3,7 @@ export * from './client/parser.js'
 export * from './client/swapnetClient.js'
 export * from './common/interfaces.js'
 export * from './common/routingPlan.js'
+export * from './common/clearingModels.js'
 
 export * from './routers/universalRouter/encoder.js'
 export * from './routers/universalRouter/constants.js'
