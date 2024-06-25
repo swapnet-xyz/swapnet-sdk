@@ -1,23 +1,4 @@
 
-export interface ITokenStaticInfo {
-    address: string;
-    name: string;
-    symbol: string;
-    decimals: number;
-    metadata: {
-        logoURI: string;
-    };
-}
-
-export interface ISwapRequest {
-    chainId: number | undefined;
-    userAddress: string | undefined;
-    inputToken: string;
-    outputToken: string;
-    inputAmount: bigint;
-    apiKey: string;
-}
-
 export interface ITokenAmountInfo {
     referenceId: number;
     amount: string;
@@ -65,6 +46,16 @@ export interface ISwapResponse {
     routes: Array<IRouteInfoInResponse>;
     calldata?: string;
     estimatedGas?: string;
+}
+
+export interface ITokenStaticInfo {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    metadata: {
+        logoURI: string;
+    };
 }
 
 export interface ITokenPrice {
