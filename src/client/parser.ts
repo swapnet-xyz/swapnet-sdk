@@ -21,7 +21,7 @@ export const printRoutingPlan = (routingPlan: IRoutingPlan): void => {
     });
 
     swaps.forEach((swap, i) => {
-        console.log(`  ${i}: ${swap.lsInfo.type} ${swap.lsInfo.address}, fromTokenOp: ${tokenOpToIndex.get(swap.fromTokenOp)} ${swap.amountIn},  toTokenOp: ${tokenOpToIndex.get(swap.toTokenOp)} ${swap.amountOut}`);
+        console.log(`  ${i}: ${swap.lsInfo.protocol} ${swap.lsInfo.address}, fromTokenOp: ${tokenOpToIndex.get(swap.fromTokenOp)} ${swap.amountIn},  toTokenOp: ${tokenOpToIndex.get(swap.toTokenOp)} ${swap.amountOut}`);
     });
 
 };
