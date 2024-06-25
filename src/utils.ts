@@ -1,6 +1,13 @@
 import { type IRouteInfoInResponse, type IUniswapV3Details, type ILimitOrderDetails, } from "./common/interfaces.js";
-import { type LsInfo, type LsSwap, type TokenOperation, type TokenOperationNodeType, } from "./common/routingPlan.js";
+import { type LsInfo, type LsSwap, type TokenOperation, } from "./common/routingPlan.js";
 
+
+export type TokenOperationNodeType =
+    'SOURCE' |
+    'PASSING_THROUGH' |
+    'MERGING' |
+    'FORKING' |
+    'DESTINATION';
 
 export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): LsSwap => {
     

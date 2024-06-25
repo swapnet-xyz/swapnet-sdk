@@ -6,8 +6,9 @@ import UniversalRouter from '@uniswap/universal-router/artifacts/contracts/Unive
 import { Interface } from 'ethers';
 import { CommandType, RoutePlanner } from './routerCommands.js';
 import { CONTRACT_BALANCE, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT } from './constants.js';
-import { accountingModelByLsType, type TokenOperation, type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
+import { type TokenOperation, type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
 import { toNodeType } from '../../utils.js';
+import { clearingModelByProtocol } from '../../common/clearingModels.js';
 
 const universalRouterInterface: Interface = new Interface(UniversalRouter.abi);
 
@@ -23,7 +24,7 @@ const toCustody = (tokenOp: TokenOperation): boolean => {
     const { fromSwaps, toSwaps, } = tokenOp;
   
     if (nodeType === 'SOURCE') {
-        if (toSwaps.some(t => accountingModelByLsType.get(t.lsInfo.protocol)!.othersAsPayer === false)) {
+        if (toSwaps.some(t => clearingModelByProtocol.get(t.lsInfo.protocol)!.othersAsPayer === false)) {
             return true;
         }
         return false;
@@ -32,7 +33,7 @@ const toCustody = (tokenOp: TokenOperation): boolean => {
         if (fromSwaps.length > 1) {
           return true;
         }
-        if (fromSwaps.some(f => accountingModelByLsType.get(f.lsInfo.protocol)!.othersAsRecipient === false)) {
+        if (fromSwaps.some(f => clearingModelByProtocol.get(f.lsInfo.protocol)!.othersAsRecipient === false)) {
           return true;
         }
         return false;

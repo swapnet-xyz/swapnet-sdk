@@ -1,56 +1,4 @@
 
-
-export interface LsAccountingModel {
-    preCalculation: boolean;     // allow to calculate exact `amountOut` according to `amountIn` before calling `swap`.
-    othersAsPayer: boolean;
-    othersAsRecipient: boolean;
-    paymentMode: 'Prepay' | 'Callback' | 'Pull';
-    // exactAmountInAsParam: boolean;  // if the LS takes exact amountIn as a parameter to call. 
-                                    // Some LS, such as LimitOrder, might not as it relies on the token pulls in when calling callbacks.
-  
-    // routerAsPayer: boolean; // always true
-    // routerAsRecipient: boolean; // always true
-};
-  
-export const accountingModelByLsType: Map<string, LsAccountingModel> = new Map();
-accountingModelByLsType.set(
-    "LimitOrder",
-    {
-        preCalculation: false,  // avoid to be called in callbacks
-        othersAsPayer: false,
-        othersAsRecipient: true,
-        paymentMode: 'Pull',
-        // exactAmountInAsParam: false,
-    }
-);
-accountingModelByLsType.set(
-    "UniswapV2",
-    {
-        preCalculation: true,
-        othersAsPayer: true,
-        othersAsRecipient: true,
-        paymentMode: 'Prepay',
-    }
-);
-accountingModelByLsType.set(
-    "UniswapV3",
-    {
-        preCalculation: false,
-        othersAsPayer: true,
-        othersAsRecipient: true,
-        paymentMode: 'Callback',
-    }
-);
-accountingModelByLsType.set(
-    "CurveV1",
-    {
-        preCalculation: false,
-        othersAsPayer: false,
-        othersAsRecipient: false,
-        paymentMode: 'Pull',
-    }
-);
-
 export interface LsInfoBase {
     protocol: string;
     address: string;
@@ -88,13 +36,6 @@ export interface LsSwap {
     amountOut: bigint;
     lsInfo: LsInfo;
 };
-
-export type TokenOperationNodeType =
-    'SOURCE' |
-    'PASSING_THROUGH' |
-    'MERGING' |
-    'FORKING' |
-    'DESTINATION';
 
 export interface TokenOperation {
     tokenInfo: {
