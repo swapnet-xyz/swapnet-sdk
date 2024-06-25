@@ -1,6 +1,6 @@
 
 
-interface LiquidityAccountingModel {
+interface IClearingModel {
     preCalculation: boolean;     // allow to calculate exact `amountOut` according to `amountIn` before calling `swap`.
     othersAsPayer: boolean;
     othersAsRecipient: boolean;
@@ -12,7 +12,7 @@ interface LiquidityAccountingModel {
     // routerAsRecipient: boolean; // always true
 };
   
-export const clearingModelByProtocol: Map<string, LiquidityAccountingModel> = new Map();
+export const clearingModelByProtocol: Map<string, IClearingModel> = new Map();
 clearingModelByProtocol.set(
     "LimitOrder",
     {
