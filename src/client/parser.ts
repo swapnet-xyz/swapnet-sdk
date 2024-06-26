@@ -1,12 +1,12 @@
 import Graph from "graph-data-structure";
 import { type ISwapResponse, } from "../common/interfaces.js";
-import { type LsSwap, type TokenOperation, type IRoutingPlan, } from "../common/routingPlan.js";
-import { toLsSwap } from "../utils.js";
+import { type Swap, type TokenOperation, type IRoutingPlan, } from "../common/routingPlan.js";
+import { toSwap } from "../utils.js";
 
 export const printRoutingPlan = (routingPlan: IRoutingPlan): void => {
     const { tokenOps, swaps } = routingPlan;
     const tokenOpToIndex: Map<TokenOperation, number> = new Map();
-    const swapToIndex: Map<LsSwap, number> = new Map();
+    const swapToIndex: Map<Swap, number> = new Map();
     tokenOps.forEach((tokenOp, i) => {
         tokenOpToIndex.set(tokenOp, i);
     });
@@ -21,7 +21,7 @@ export const printRoutingPlan = (routingPlan: IRoutingPlan): void => {
     });
 
     swaps.forEach((swap, i) => {
-        console.log(`  ${i}: ${swap.lsInfo.protocol} ${swap.lsInfo.address}, fromTokenOp: ${tokenOpToIndex.get(swap.fromTokenOp)} ${swap.amountIn},  toTokenOp: ${tokenOpToIndex.get(swap.toTokenOp)} ${swap.amountOut}`);
+        console.log(`  ${i}: ${swap.liquidityInfo.protocol} ${swap.liquidityInfo.address}, fromTokenOp: ${tokenOpToIndex.get(swap.fromTokenOp)} ${swap.amountIn},  toTokenOp: ${tokenOpToIndex.get(swap.toTokenOp)} ${swap.amountOut}`);
     });
 
 };
@@ -43,7 +43,7 @@ export const parse = (swapResponse: ISwapResponse): IRoutingPlan => {
         })
     });
 
-    const swapsByToTokenId: Map<number, LsSwap []> = new Map();
+    const swapsByToTokenId: Map<number, Swap []> = new Map();
     const graph = Graph();
     swapResponse.routes.forEach(route => {
         const fromTokenId = route.fromTokens[0].referenceId;
@@ -53,7 +53,7 @@ export const parse = (swapResponse: ISwapResponse): IRoutingPlan => {
         if (!swapsByToTokenId.has(toTokenId)) {
             swapsByToTokenId.set(toTokenId, []);
         }
-        const swap: LsSwap = toLsSwap(route, tokenOpsById);
+        const swap: Swap = toSwap(route, tokenOpsById);
         swap.fromTokenOp.toSwaps.push(swap);
         swap.toTokenOp.fromSwaps.push(swap);
         swapsByToTokenId.get(toTokenId)!.push(swap);
@@ -62,7 +62,7 @@ export const parse = (swapResponse: ISwapResponse): IRoutingPlan => {
 
 
     const tokenOps: TokenOperation[] = [];
-    const swaps: LsSwap[] = [];
+    const swaps: Swap[] = [];
 
     sortedTokenOpIds.forEach(tokenOpId => {
         const tokenOp = tokenOpsById.get(tokenOpId);
