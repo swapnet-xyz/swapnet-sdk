@@ -1,6 +1,7 @@
 import { type IRoutingPlan } from "../common/routingPlan.js";
+import { toAmountOutMinimum } from "../utils.js";
 import { defaultRouters } from "./routerInfo.js";
-import { type IRouter } from "./types.js";
+import { type IEncodeOptions, type IResolvedEncodeOptions, type IRouter } from "./types.js";
 
 
 export abstract class RouterBase implements IRouter {
@@ -31,5 +32,37 @@ export abstract class RouterBase implements IRouter {
         this.tokenProxyAddress = _tokenProxyAddress === undefined ? defaultRouterInfo.tokenProxyAddress : _tokenProxyAddress;
     }
 
-    public abstract encode(routingPlan: IRoutingPlan, amountOutMinimum: bigint, recipientAddress: string | undefined): string;
+    public abstract encode(routingPlan: IRoutingPlan, options: IEncodeOptions): string;
+
+    protected resolveEncodeOptions(routingPlan: IRoutingPlan, options: IEncodeOptions): IResolvedEncodeOptions {
+        let { slippageTolerance, amountOutMinimum, deadline, isInputNative, isOutputNative } = options;
+
+        if (slippageTolerance !== undefined && amountOutMinimum !== undefined) {
+            throw new Error(`Conflict encoding options: both 'slippageTolerance' and 'amountOutMinimum' are specified.`);
+        }
+
+        if (amountOutMinimum === undefined) {
+            if (slippageTolerance === undefined) {
+                slippageTolerance = 0.01;
+            }
+            amountOutMinimum = toAmountOutMinimum(routingPlan.amountOut, slippageTolerance);
+        }
+
+
+        if (isInputNative === undefined) {
+            isInputNative = false;
+        }
+
+        if (isOutputNative === undefined) {
+            isOutputNative = false;
+        }
+
+        return {
+            amountOutMinimum,
+            isInputNative,
+            isOutputNative,
+            deadline,
+        }
+
+    }
 }
