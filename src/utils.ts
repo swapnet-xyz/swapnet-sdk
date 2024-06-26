@@ -12,21 +12,28 @@ export type TokenOperationNodeType =
 export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): LsSwap => {
     
     let lsInfo: LsInfo;
-    if (route.name.startsWith('UniswapV2')) {
+    if (
+        route.name.startsWith('UniswapV2') ||
+        route.name.startsWith('ThrusterV2-3k') ||
+        route.name.startsWith('ThrusterV2-10k') ||
+        route.name.startsWith('RingswapV2')
+
+    ) {
         lsInfo = {
             protocol: route.name,
             address: route.address,
         }
     }
-    else if (route.name.startsWith('UniswapV3')) {
+    else if (
+        route.name.startsWith('UniswapV3') ||
+        route.name.startsWith('ThrusterV3') ||
+        route.name.startsWith('RingswapV3')
+    ) {
         if (route.details === undefined || (route.details as IUniswapV3Details).fee === undefined) {
             throw new Error(`Invalid Uniswap V3 route details!`);
         }
 
         let fee: bigint = BigInt((route.details as IUniswapV3Details).fee);
-        if (fee !== 100n && fee !== 500n && fee !== 3000n && fee !== 10000n) {
-            throw new Error(`Invalid Uniswap V3 fee ${fee}!`);
-        }
 
         lsInfo = {
             protocol: route.name,

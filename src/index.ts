@@ -4,7 +4,6 @@ export * from './client/swapnetClient.js'
 
 export * from './common/interfaces.js'
 export * from './common/routingPlan.js'
-export * from './common/clearingModels.js'
 
 export * from './routers/routerInfo.js'
 export * from './routers/types.js'
