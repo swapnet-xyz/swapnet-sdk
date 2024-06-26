@@ -5,11 +5,14 @@ import UniversalRouterData from '@uniswap/universal-router/artifacts/contracts/U
 
 import { Interface } from 'ethers';
 import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames } from './routerCommands.js';
-import { CONTRACT_BALANCE, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT } from './constants.js';
 import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
 import { type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
 import { RouterBase } from '../routerBase.js';
 import type { IEncodeOptions } from '../types.js';
+
+const CONTRACT_BALANCE = 2n ** 255n;
+const SENDER_AS_RECIPIENT = '0x0000000000000000000000000000000000000001';
+const ROUTER_AS_RECIPIENT = '0x0000000000000000000000000000000000000002';
 
 const universalRouterInterface: Interface = new Interface(UniversalRouterData.abi);
 
