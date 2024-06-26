@@ -5,11 +5,14 @@ import UniversalRouterData from '@uniswap/universal-router/artifacts/contracts/U
 
 import { Interface } from 'ethers';
 import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames } from './routerCommands.js';
-import { CONTRACT_BALANCE, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT } from './constants.js';
 import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
 import { type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
 import { RouterBase } from '../routerBase.js';
 import type { IEncodeOptions } from '../types.js';
+
+const CONTRACT_BALANCE = 2n ** 255n;
+const SENDER_AS_RECIPIENT = '0x0000000000000000000000000000000000000001';
+const ROUTER_AS_RECIPIENT = '0x0000000000000000000000000000000000000002';
 
 const universalRouterInterface: Interface = new Interface(UniversalRouterData.abi);
 
@@ -111,20 +114,20 @@ export class UniversalRouter extends RouterBase {
 
                 const fromToken = tokenOp.tokenInfo.address;
                 const toToken = toSwap.toTokenOp.tokenInfo.address;
-                const { lsInfo } = toSwap;
+                const { liquidityInfo } = toSwap;
                 let { amountIn } = toSwap;
                 if (j === toSwaps.length - 1) {
                     amountIn = CONTRACT_BALANCE;
                 }
 
                 if (
-                    lsInfo.protocol === "UniswapV2" ||
-                    lsInfo.protocol === "ThrusterV2-3k" ||
-                    lsInfo.protocol === "ThrusterV2-10k" ||
-                    lsInfo.protocol === "RingswapV2"
+                    liquidityInfo.protocol === "UniswapV2" ||
+                    liquidityInfo.protocol === "ThrusterV2-3k" ||
+                    liquidityInfo.protocol === "ThrusterV2-10k" ||
+                    liquidityInfo.protocol === "RingswapV2"
                 ) {
                     let path = [ fromToken, toToken ];
-                    if (lsInfo.protocol === "RingswapV2") {
+                    if (liquidityInfo.protocol === "RingswapV2") {
                         const fewWrappedFromToken = getFewWrappedTokenAddress(fromToken);
                         const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
                         path = [ fewWrappedFromToken, fewWrappedToToken ];
@@ -143,10 +146,10 @@ export class UniversalRouter extends RouterBase {
                         0n, // minAmountOut
                         path,
                         false,  // payerIsUser
-                        toV2ForkName(lsInfo.protocol),
+                        toV2ForkName(liquidityInfo.protocol),
                     ]);
 
-                    if (lsInfo.protocol === "RingswapV2") {
+                    if (liquidityInfo.protocol === "RingswapV2") {
                         const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fewWrappedToToken,
@@ -157,15 +160,15 @@ export class UniversalRouter extends RouterBase {
                     }
                 }
                 else if (
-                    lsInfo.protocol === "UniswapV3" ||
-                    lsInfo.protocol === "ThrusterV3" ||
-                    lsInfo.protocol === "RingswapV3"
+                    liquidityInfo.protocol === "UniswapV3" ||
+                    liquidityInfo.protocol === "ThrusterV3" ||
+                    liquidityInfo.protocol === "RingswapV3"
                 ) {
                     let path: string;
-                    if (lsInfo.protocol === "RingswapV3") {
+                    if (liquidityInfo.protocol === "RingswapV3") {
                         const fewWrappedFromToken = getFewWrappedTokenAddress(fromToken);
                         const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
-                        path = encodeV3RouteToPath(fewWrappedFromToken, fewWrappedToToken, Number((lsInfo as UniswapV3Info).fee));
+                        path = encodeV3RouteToPath(fewWrappedFromToken, fewWrappedToToken, Number((liquidityInfo as UniswapV3Info).fee));
 
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fromToken,
@@ -175,7 +178,7 @@ export class UniversalRouter extends RouterBase {
                         ]);
                     }
                     else {
-                        path = encodeV3RouteToPath(fromToken, toToken, Number((lsInfo as UniswapV3Info).fee));
+                        path = encodeV3RouteToPath(fromToken, toToken, Number((liquidityInfo as UniswapV3Info).fee));
                     }
 
                     planner.addCommand(CommandType.V3_SWAP_EXACT_IN, [
@@ -184,10 +187,10 @@ export class UniversalRouter extends RouterBase {
                         0n, // minAmountOut
                         path,
                         false,  // payerIsUser
-                        toV3ForkName(lsInfo.protocol),
+                        toV3ForkName(liquidityInfo.protocol),
                     ]);
 
-                    if (lsInfo.protocol === "RingswapV3") {
+                    if (liquidityInfo.protocol === "RingswapV3") {
                         const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fewWrappedToToken,
@@ -197,9 +200,9 @@ export class UniversalRouter extends RouterBase {
                         ]);
                     }
                 }
-                else if (lsInfo.protocol === "CurveV1") {
+                else if (liquidityInfo.protocol === "CurveV1") {
                     planner.addCommand(CommandType.CURVE_V1, [
-                        lsInfo.address,
+                        liquidityInfo.address,
                         fromToken,
                         toToken,
                         amountIn,
@@ -207,7 +210,7 @@ export class UniversalRouter extends RouterBase {
                     ]);
                 }
                 else {
-                    throw new Error(`Unknown protocol ${lsInfo.protocol}!`);
+                    throw new Error(`Unknown protocol ${liquidityInfo.protocol}!`);
                 }
             });
         });

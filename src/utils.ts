@@ -1,5 +1,5 @@
 import { type IRouteInfoInResponse, type IUniswapV3Details, type ILimitOrderDetails, } from "./common/interfaces.js";
-import { type LsInfo, type LsSwap, type TokenOperation, } from "./common/routingPlan.js";
+import { type LiquidityInfo, type Swap, type TokenOperation, } from "./common/routingPlan.js";
 
 
 export type TokenOperationNodeType =
@@ -9,9 +9,9 @@ export type TokenOperationNodeType =
     'FORKING' |
     'DESTINATION';
 
-export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): LsSwap => {
+export const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): Swap => {
     
-    let lsInfo: LsInfo;
+    let liquidityInfo: LiquidityInfo;
     if (
         route.name.startsWith('UniswapV2') ||
         route.name.startsWith('ThrusterV2-3k') ||
@@ -19,7 +19,7 @@ export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, 
         route.name.startsWith('RingswapV2')
 
     ) {
-        lsInfo = {
+        liquidityInfo = {
             protocol: route.name,
             address: route.address,
         }
@@ -35,21 +35,21 @@ export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, 
 
         let fee: bigint = BigInt((route.details as IUniswapV3Details).fee);
 
-        lsInfo = {
+        liquidityInfo = {
             protocol: route.name,
             address: route.address,
             fee,
         }
     }
     else if (route.name.startsWith('CurveV1')) {
-        lsInfo = {
+        liquidityInfo = {
             protocol: route.name,
             address: route.address,
         }
     }
     else if (route.name.startsWith('Orderbook')) {
         const details = route.details as ILimitOrderDetails;
-        lsInfo = {
+        liquidityInfo = {
             protocol: "LimitOrder",
             address: details.maker,
             maker: details.maker,
@@ -63,7 +63,7 @@ export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, 
         }
     }
     else {
-        lsInfo = {
+        liquidityInfo = {
             protocol: route.name,
             address: route.address,
         }
@@ -84,7 +84,7 @@ export const toLsSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, 
         toTokenOp,
         amountIn: BigInt(route.fromTokens[0].amount),
         amountOut: BigInt(route.toTokens[0].amount),
-        lsInfo,
+        liquidityInfo,
     }
 }
 

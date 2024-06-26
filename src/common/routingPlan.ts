@@ -1,10 +1,10 @@
 
-export interface LsInfoBase {
+export interface LiquidityInfoBase {
     protocol: string;
     address: string;
 };
 
-export interface LimitOrderInfo extends LsInfoBase {
+export interface LimitOrderInfo extends LiquidityInfoBase {
     maker: string;
     makerToken: string;
     takerToken: string;
@@ -15,26 +15,26 @@ export interface LimitOrderInfo extends LsInfoBase {
     signature: string;
 };
 
-export interface UniswapV3Info extends LsInfoBase {
+export interface UniswapV3Info extends LiquidityInfoBase {
     fee: bigint;
 };
 
-// export interface UniswapV2Info extends LsInfoBase {
+// export interface UniswapV2Info extends LiquidityInfoBase {
 // };
 
-// export interface CurveV1Info extends LsInfoBase {
+// export interface CurveV1Info extends LiquidityInfoBase {
 // };
 
-export type LsInfo = LsInfoBase
+export type LiquidityInfo = LiquidityInfoBase
     | LimitOrderInfo
     | UniswapV3Info;
 
-export interface LsSwap {
+export interface Swap {
     fromTokenOp: TokenOperation;
     toTokenOp: TokenOperation;
     amountIn: bigint;
     amountOut: bigint;
-    lsInfo: LsInfo;
+    liquidityInfo: LiquidityInfo;
 };
 
 export interface TokenOperation {
@@ -45,13 +45,13 @@ export interface TokenOperation {
         decimals: number;
         usdPrice?: number;
     };
-    fromSwaps: LsSwap [];
-    toSwaps: LsSwap [];
+    fromSwaps: Swap [];
+    toSwaps: Swap [];
 };
 
 export interface IRoutingPlan {
     tokenOps: TokenOperation [],    // in topological order
-    swaps: LsSwap [],               // in topological order
+    swaps: Swap [],               // in topological order
     fromToken: string,
     toToken: string,
     amountIn: bigint,
