@@ -7,7 +7,7 @@ import { resolveEncodeOptions } from "../routers/routerBase.js";
 import { parse } from "../parser.js";
 
 import orbitToPac10k from './assets/orbitToPac10k.json' assert { type: "json" };
-import { SwapSimulation } from "./index.js";
+import { SettlementSimulation } from "./index.js";
 
 let rpcUrl: string | undefined = process.env.RPC_URL;
 if (rpcUrl === undefined || rpcUrl === "") {
@@ -22,11 +22,11 @@ const provider = new JsonRpcProvider(
     { staticNetwork: Network.from(network) },
 );
 
-const routerAddress: string = "0xAA539Bcf648C0b4F8984FcDEb5228827e7AAC3AE";
-const tokenProxyAddress: string = "0x000000000022d473030f116ddee9f6b43ac78ba3";
+const routerAddress: string = "0xAA539Bcf648C0b4F8984FcDEb5228827e7AAC3AE";     // universal router (proxy) deployed address
+const tokenProxyAddress: string = "0x000000000022d473030f116ddee9f6b43ac78ba3";     // permit2 deployed address
 const router = new UniversalRouter(chainId, routerAddress, tokenProxyAddress);
 
-const senderAddress: string = "0x3B2Be8413F34fc6491506B18c530A264c0f7adAE";
+const senderAddress: string = "0x3B2Be8413F34fc6491506B18c530A264c0f7adAE";     // user address
 
 const simulateAsync = async (
     caseName: string,
@@ -35,11 +35,12 @@ const simulateAsync = async (
     blockTag: BlockTag,
 ): Promise<void> => {
 
-    const routingPlan = parse(swapResponse);
+    const routingPlan = parse(swapResponse);    // parse swapnet API response
 
-    const calldata = router.encode(routingPlan, encodeOptions);
+    const calldata = router.encode(routingPlan, encodeOptions);     // use router object to encode calldata, with injected options
 
-    const { amountOut } = await SwapSimulation
+    // simulate the calldata with an `eth_call` RPC call, with additional state override to assume sufficient token balances and approvals
+    const { amountOut } = await SettlementSimulation
         .from(blockTag)
         .connect(provider)
         .runAsync(
@@ -53,7 +54,6 @@ const simulateAsync = async (
         );
 
     const { amountOutMinimum } = resolveEncodeOptions(routingPlan, encodeOptions);
-
     if (amountOut < amountOutMinimum) {
         throw new Error(`Case ${caseName} failed as simulated amountOut ${amountOut} is less than amountOutMinimum ${amountOutMinimum}.`);
     }
@@ -61,4 +61,4 @@ const simulateAsync = async (
     console.log(`Case '${caseName}' passed simulation!`);
 }
 
-await simulateAsync('10k ORBIT to PAC', orbitToPac10k, { slippageTolerance: 0.1 }, 5358636);
+await simulateAsync('10k ORBIT to PAC', orbitToPac10k, { slippageTolerance: 0.01 }, 5358636);

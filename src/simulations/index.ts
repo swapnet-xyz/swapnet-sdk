@@ -31,9 +31,9 @@ const getGasForCalldata = (calldata: string): bigint => {
     return zeros * 4n + nonZeros * 16n;
 };
 
-export class SwapSimulation {
-    public static from(blockTag: BlockTag): SwapSimulation {
-        return new SwapSimulation(blockTag);
+export class SettlementSimulation {
+    public static from(blockTag: BlockTag): SettlementSimulation {
+        return new SettlementSimulation(blockTag);
     }
 
     private _ledgerState: LedgerState;
@@ -43,7 +43,7 @@ export class SwapSimulation {
         this._ledgerState = LedgerState.from(blockTag);
     }
 
-    public connect(provider: JsonRpcProvider): SwapSimulation {
+    public connect(provider: JsonRpcProvider): SettlementSimulation {
         this._provider = provider;
         return this;
     }
@@ -58,7 +58,7 @@ export class SwapSimulation {
         calldata: string,
     ): Promise<{ gas: bigint, amountOut: bigint, }> {
         if (this._provider === undefined) {
-            throw new Error(`No provider is connected with SwapSimulation.`);
+            throw new Error(`No provider is connected with SettlementSimulation.`);
         }
 
         const stateBuilder = this._ledgerState
