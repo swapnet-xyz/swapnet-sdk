@@ -1,19 +1,18 @@
-import type { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "../common/interfaces.js";
-import type { IRoutingPlan, TokenOperation } from "../common/routingPlan.js";
-import { parse } from "./parser.js";
+import type { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "./common/interfaces.js";
+import type { TokenOperation } from "./common/routingPlan.js";
 
-const apiVersion = 'v1.0'
 export class SwapnetClient {
     constructor (
         private readonly _apiKey: string,
         private readonly _baseUrl: string = 'https://app.swap-net.xyz',
+        private readonly _apiVersion: string = 'v1.0',
     ) {}
 
     public async getSupportedTokensAsync(
         chainId: number,
     ): Promise<ITokenStaticInfo[]> {
 
-        const url = `${this._baseUrl}/api/${apiVersion}/tokens?` +
+        const url = `${this._baseUrl}/api/${this._apiVersion}/tokens?` +
             `apiKey=${this._apiKey}&` + 
             `chainId=${chainId}`;
 
@@ -28,7 +27,7 @@ export class SwapnetClient {
         sellAmount: bigint | undefined,
         buyAmount: bigint | undefined,
         userAddress: string | undefined,
-    ): Promise<IRoutingPlan> {
+    ): Promise<ISwapResponse> {
 
         if (sellAmount === undefined && buyAmount === undefined) {
             throw new Error(`Both sellAmount and buyAmount are missing!`);
@@ -38,7 +37,7 @@ export class SwapnetClient {
             throw new Error(`Both sellAmount and buyAmount are specified!`);
         }
 
-        const url = `${this._baseUrl}/api/${apiVersion}/swap?` +
+        const url = `${this._baseUrl}/api/${this._apiVersion}/swap?` +
             `apiKey=${this._apiKey}&` +
             `chainId=${chainId}&` +
             `sellToken=${sellTokenAddress}&` +
@@ -49,7 +48,7 @@ export class SwapnetClient {
 
         const response = await fetch(url);
         const swapResponse = (await response.json()) as ISwapResponse;
-        return parse(swapResponse);
+        return swapResponse;
     }
 
     public async getTokenPricesAsync(
@@ -57,7 +56,7 @@ export class SwapnetClient {
         tokenOps: TokenOperation [],
     ): Promise<ITokenPrice []> {
 
-        const url = `${this._baseUrl}/api/${apiVersion}/prices?` +
+        const url = `${this._baseUrl}/api/${this._apiVersion}/prices?` +
             `apiKey=${this._apiKey}&` +
             `chainId=${chainId}&` +
             `tokens=${tokenOps.map(o => o.tokenInfo.address).join(',')}`;
