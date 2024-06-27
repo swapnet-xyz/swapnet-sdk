@@ -31,7 +31,6 @@
     },
     "dependencies": {
       "ethers": "^6.7.0",
-      "@ethersproject/solidity": "5.7.0",
       "graph-data-structure": "^3.3.0"
     },
     "devDependencies": {
