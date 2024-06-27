@@ -1,9 +1,8 @@
 
-import { pack } from '@ethersproject/solidity'
 // @ts-ignore
 import UniversalRouterData from '@uniswap/universal-router/artifacts/contracts/UniversalRouter.sol/UniversalRouter.json' assert { type: "json" };
 
-import { Interface } from 'ethers';
+import { Interface, solidityPacked } from 'ethers';
 import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames } from './routerCommands.js';
 import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
 import { type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
@@ -20,7 +19,7 @@ const encodeV3RouteToPath = (inputTokenAddress: string, outputTokenAddress: stri
     const types = ['address', 'uint24', 'address'];
     const path = [inputTokenAddress, feeAmount, outputTokenAddress];
   
-    return pack(types, path)
+    return solidityPacked(types, path)
 }
 
 const toV2ForkName = (protocol: string): UniswapV2ForkNames => {
