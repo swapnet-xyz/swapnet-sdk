@@ -1,19 +1,19 @@
 
 // @ts-ignore
-import UniversalRouterData from '@uniswap/universal-router/artifacts/contracts/UniversalRouter.sol/UniversalRouter.json' assert { type: "json" };
+import universalRouterData from './universalRouter.json' assert { type: "json" };
 
 import { Interface, solidityPacked } from 'ethers';
 import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames } from './routerCommands.js';
 import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
 import { type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
-import { RouterBase } from '../routerBase.js';
+import { RouterBase, resolveEncodeOptions } from '../routerBase.js';
 import type { IEncodeOptions } from '../types.js';
 
 const CONTRACT_BALANCE = 2n ** 255n;
 const SENDER_AS_RECIPIENT = '0x0000000000000000000000000000000000000001';
 const ROUTER_AS_RECIPIENT = '0x0000000000000000000000000000000000000002';
 
-const universalRouterInterface: Interface = new Interface(UniversalRouterData.abi);
+const universalRouterInterface: Interface = new Interface(universalRouterData.abi);
 
 const encodeV3RouteToPath = (inputTokenAddress: string, outputTokenAddress: string, feeAmount: number): string => {
     const types = ['address', 'uint24', 'address'];
@@ -70,10 +70,10 @@ export class UniversalRouter extends RouterBase {
     ): string {
         const {
             amountOutMinimum,
-            isInputNative,
-            isOutputNative,
+            wrapInput,
+            unwrapOutput,
             deadline,
-        } = this.resolveEncodeOptions(routingPlan, options);
+        } = resolveEncodeOptions(routingPlan, options);
 
         let { inputTokenPermit, recipientAddress } = options;
 
@@ -90,7 +90,7 @@ export class UniversalRouter extends RouterBase {
             planner.addCommand(CommandType.PERMIT2_PERMIT, [permitSingle, signature]);
         }
 
-        if (isInputNative) {
+        if (wrapInput) {
             planner.addCommand(CommandType.WRAP_ETH, [ROUTER_AS_RECIPIENT, amountIn]);
         }
         else {
@@ -153,7 +153,7 @@ export class UniversalRouter extends RouterBase {
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fewWrappedToToken,
                             ROUTER_AS_RECIPIENT,
-                            amountOutMinimum,
+                            0n, // minAmountOut
                             false,
                         ]);
                     }
@@ -194,7 +194,7 @@ export class UniversalRouter extends RouterBase {
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fewWrappedToToken,
                             ROUTER_AS_RECIPIENT,
-                            amountOutMinimum,
+                            0n, // minAmountOut
                             false,
                         ]);
                     }
@@ -214,7 +214,7 @@ export class UniversalRouter extends RouterBase {
             });
         });
 
-        if (isOutputNative) {
+        if (unwrapOutput) {
             planner.addCommand(CommandType.UNWRAP_WETH, [recipientAddress, amountOutMinimum]);
         } else {
             planner.addCommand(CommandType.SWEEP, [toToken, recipientAddress, amountOutMinimum]);

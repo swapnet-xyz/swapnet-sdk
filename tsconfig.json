@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", // target the same ES version as ethers.js v6.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "sourceMap": false,   // enable if publishing source code
+    "declarationMap": false,  // enable if publishing source code
+    "verbatimModuleSyntax": true,
+    "strictPropertyInitialization": false,
+    "resolveJsonModule": true,
+    "outDir": "dist",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "lib": [
+      "es2020",
+      "es5"
+    ],
+    "typeRoots": [
+      "./typechain",
+      "./node_modules/@types"
+    ],
+    "types": [
+      "node"
+    ],
+  },
+  "include": [
+    "src"
+  ]
+}

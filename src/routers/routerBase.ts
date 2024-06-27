@@ -33,36 +33,35 @@ export abstract class RouterBase implements IRouter {
     }
 
     public abstract encode(routingPlan: IRoutingPlan, options: IEncodeOptions): string;
+}
 
-    protected resolveEncodeOptions(routingPlan: IRoutingPlan, options: IEncodeOptions): IResolvedEncodeOptions {
-        let { slippageTolerance, amountOutMinimum, deadline, isInputNative, isOutputNative } = options;
+export const resolveEncodeOptions = (routingPlan: IRoutingPlan, options: IEncodeOptions): IResolvedEncodeOptions => {
+    let { slippageTolerance, amountOutMinimum, deadline, wrapInput, unwrapOutput } = options;
 
-        if (slippageTolerance !== undefined && amountOutMinimum !== undefined) {
-            throw new Error(`Conflict encoding options: both 'slippageTolerance' and 'amountOutMinimum' are specified.`);
-        }
-
-        if (amountOutMinimum === undefined) {
-            if (slippageTolerance === undefined) {
-                slippageTolerance = 0.01;
-            }
-            amountOutMinimum = toAmountOutMinimum(routingPlan.amountOut, slippageTolerance);
-        }
-
-
-        if (isInputNative === undefined) {
-            isInputNative = false;
-        }
-
-        if (isOutputNative === undefined) {
-            isOutputNative = false;
-        }
-
-        return {
-            amountOutMinimum,
-            isInputNative,
-            isOutputNative,
-            deadline,
-        }
-
+    if (slippageTolerance !== undefined && amountOutMinimum !== undefined) {
+        throw new Error(`Conflict encoding options: both 'slippageTolerance' and 'amountOutMinimum' are specified.`);
     }
+
+    if (amountOutMinimum === undefined) {
+        if (slippageTolerance === undefined) {
+            slippageTolerance = 0.01;
+        }
+        amountOutMinimum = toAmountOutMinimum(routingPlan.amountOut, slippageTolerance);
+    }
+
+
+    if (wrapInput === undefined) {
+        wrapInput = false;
+    }
+
+    if (unwrapOutput === undefined) {
+        unwrapOutput = false;
+    }
+
+    return {
+        amountOutMinimum,
+        wrapInput,
+        unwrapOutput,
+        deadline,
+    };
 }

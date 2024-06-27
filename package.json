@@ -27,10 +27,13 @@
       "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
       "build": "tsc && swc ./src -d dist --copy-files",
       "clean": "rm -rf node_modules dist",
+      "simulate": "pnpm build && node -r dotenv/config dist/simulations/simulations.test.js",
       "test": "echo \"Done!\""
     },
     "dependencies": {
       "ethers": "^6.7.0",
+      "ethers-override": "^0.0.5",
+      "dotenv": "^16.3.1",
       "graph-data-structure": "^3.3.0"
     },
     "devDependencies": {
