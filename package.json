@@ -32,7 +32,6 @@
     },
     "dependencies": {
       "ethers": "^6.7.0",
-      "ethers-override": "^0.0.5",
       "dotenv": "^16.3.1",
       "graph-data-structure": "^3.3.0"
     },

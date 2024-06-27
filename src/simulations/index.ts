@@ -1,20 +1,18 @@
 import type { BlockTag } from "ethers";
 import { Interface, JsonRpcProvider, toQuantity } from "ethers";
-import { LedgerState, Permit2AsIf, addressAt, tokenAt } from "ethers-override";
-// import { LedgerState, Permit2AsIf, addressAt, tokenAt } from "../../index.js";
+import { LedgerState, permit2, addressAt, tokenAt } from "../ethers-override/index.js";
 
 // @ts-ignore
-import erc20 from './erc20.json' assert { type: "json" };
+import erc20 from '../abi/erc20.json' assert { type: "json" };
 // @ts-ignore
-import MULTICALL3ABI from './multicall3Revised.json' assert { type: "json" };
+import multicall3RevisedAbi from '../abi/multicall3Revised.json' assert { type: "json" };
 // @ts-ignore
-import multicall3Revised from './multicall3RevisedDeployedBytecode.json' assert { type: "json" };
+import multicall3RevisedCode from '../deployedBytecode/multicall3Revised.json' assert { type: "json" };
 
 const erc20Interface: Interface = new Interface(erc20.abi);
-const multicallInterface: Interface = new Interface(MULTICALL3ABI.abi);
-const multicallDeployedCode: string = multicall3Revised.deployedBytecode;
+const multicallInterface: Interface = new Interface(multicall3RevisedAbi.abi);
+const multicallDeployedCode: string = multicall3RevisedCode.deployedBytecode;
 
-const permit2 = (permit2Address: string): Permit2AsIf => new Permit2AsIf(permit2Address);
 const getGasForCalldata = (calldata: string): bigint => {
 
     let zeros: bigint = 0n;

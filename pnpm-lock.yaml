@@ -14,9 +14,6 @@ importers:
       ethers:
         specifier: ^6.7.0
         version: 6.13.0
-      ethers-override:
-        specifier: ^0.0.5
-        version: 0.0.5
       graph-data-structure:
         specifier: ^3.3.0
         version: 3.5.0
@@ -832,16 +829,6 @@ packages:
     resolution: {integrity: sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g==}
     engines: {node: '>=0.10.0'}
     dev: true
-
-  /ethers-override@0.0.5:
-    resolution: {integrity: sha512-0zKNzzCewcqT1k+K2Nn6Li9DA+Dn3qwhU3Fl+0I57+a145SG6xZwy2NJs+55IEy4glR06eDlV9EZrMKDI5zUBw==}
-    dependencies:
-      ethers: 6.13.0
-      tslib: 2.4.0
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-    dev: false
 
   /ethers@6.13.0:
     resolution: {integrity: sha512-+yyQQQWEntY5UVbCv++guA14RRVFm1rSnO1GoLFdrK7/XRWMoktNgyG9UjwxrQqGBfGyFKknNZ81YpUS2emCgg==}
