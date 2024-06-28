@@ -3,9 +3,9 @@ import { Interface, JsonRpcProvider, toQuantity } from "ethers";
 import { LedgerState, permit2, addressAt, tokenAt } from "./ethers-override/index.js";
 
 // @ts-ignore
-import erc20 from '../abi/erc20.json' assert { type: "json" };
+import erc20 from './abi/erc20.json' assert { type: "json" };
 // @ts-ignore
-import multicall3Revised from '../abi/multicall3Revised.json' assert { type: "json" };
+import multicall3Revised from './abi/multicall3Revised.json' assert { type: "json" };
 
 const erc20Interface: Interface = new Interface(erc20.abi);
 const multicallInterface: Interface = new Interface(multicall3Revised.abi);
