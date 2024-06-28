@@ -52,9 +52,10 @@ export class SettlementSimulation {
         senderAddress: string,
         routerAddress: string,
         tokenProxyAddress: string | undefined,
-        sellTokenAddress: string,
-        buyTokenAddress: string,
-        sellAmount: bigint,
+        inputTokenAddress: string,
+        outputTokenAddress: string,
+        amountIn: bigint,
+        upwrapOutput: boolean,
         calldata: string,
     ): Promise<{ gas: bigint, amountOut: bigint, }> {
         if (this._provider === undefined) {
@@ -74,36 +75,43 @@ export class SettlementSimulation {
                     .is(multicallDeployedCode)
             )
             .asif(
-                tokenAt(sellTokenAddress)
+                tokenAt(inputTokenAddress)
                     .connect(this._provider)
                     .balanceOf(senderAddress)
-                    .is(sellAmount + 1n)
+                    .is(amountIn + 1n)
             )
             .asif(
-                tokenAt(sellTokenAddress)
+                tokenAt(inputTokenAddress)
                     .connect(this._provider)
                     .allowance(senderAddress, tokenProxyAddress === undefined ? routerAddress : tokenProxyAddress)
-                    .is(sellAmount + 1n)
+                    .is(amountIn + 1n)
             );
 
         if (tokenProxyAddress !== undefined) {
             stateBuilder.asif(
                 permit2(tokenProxyAddress)
-                    .allowance(senderAddress, sellTokenAddress, routerAddress)
+                    .allowance(senderAddress, inputTokenAddress, routerAddress)
                     .is({
                         nonce: 1n,
                         expiration: BigInt(Math.floor(Date.now() / 1000) + 3600),
-                        amount: sellAmount + 1n
+                        amount: amountIn + 1n
                     })
             );
         }
         const [ blockTag, override ] = await stateBuilder.getStateAsync();
 
-        const balanceOfCalldata = erc20Interface.encodeFunctionData("balanceOf", [ senderAddress ]);
+        let balanceOfBuyTokenCall;
+        if (upwrapOutput) {
+            balanceOfBuyTokenCall = [senderAddress, multicallInterface.encodeFunctionData("getEthBalance", [ senderAddress ])];
+        }
+        else {
+            balanceOfBuyTokenCall = [outputTokenAddress, erc20Interface.encodeFunctionData("balanceOf", [ senderAddress ])];
+        }
+
         const multicallData = multicallInterface.encodeFunctionData("aggregate2", [[
-            [buyTokenAddress, balanceOfCalldata],
+            balanceOfBuyTokenCall,
             [routerAddress, calldata],
-            [buyTokenAddress, balanceOfCalldata],
+            balanceOfBuyTokenCall,
         ]]);
 
         const result = await this._provider.send("eth_call", [{

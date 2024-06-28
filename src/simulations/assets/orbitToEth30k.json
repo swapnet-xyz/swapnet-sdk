@@ -1,0 +1,67 @@
+{
+    "aggregator": "swapnet",
+    "sell": {
+        "referenceId": 16,
+        "amount": "300000000000000008388608"
+    },
+    "buy": {
+        "referenceId": 1,
+        "amount": "3352348348327298237"
+    },
+    "nativeTokenUsdPrice": 3451.6849575060082,
+    "tokens": [
+        {
+            "referenceId": 16,
+            "address": "0x42e12d42b3d6c4a74a88a61063856756ea2db357",
+            "name": "Orbit Protocol",
+            "symbol": "ORBIT",
+            "decimals": 18,
+            "usdPrice": 0.0405448275866092
+        },
+        {
+            "referenceId": 1,
+            "address": "0x4300000000000000000000000000000000000004",
+            "name": "Wrapped Ether",
+            "symbol": "WETH",
+            "decimals": 18,
+            "usdPrice": 3451.6849575060082
+        }
+    ],
+    "routes": [
+        {
+            "address": "0xe9b623DF3A61434D9628b04DF6381C7c5725a5Af",
+            "name": "ThrusterV3",
+            "details": {
+                "fee": 10000
+            },
+            "fromTokens": [
+                {
+                    "referenceId": 16,
+                    "amount": "129320194032595477174113"
+                }
+            ],
+            "toTokens": [
+                {
+                    "referenceId": 1,
+                    "amount": "1437005807137810048"
+                }
+            ]
+        },
+        {
+            "address": "0xF002615308545e9C3079506D093882a39bd11F92",
+            "name": "RingswapV2",
+            "fromTokens": [
+                {
+                    "referenceId": 16,
+                    "amount": "170679805967404531214495"
+                }
+            ],
+            "toTokens": [
+                {
+                    "referenceId": 1,
+                    "amount": "1915342541189488189"
+                }
+            ]
+        }
+    ]
+}

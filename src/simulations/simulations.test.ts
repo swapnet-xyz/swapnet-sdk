@@ -7,6 +7,7 @@ import { resolveEncodeOptions } from "../routers/routerBase.js";
 import { parse } from "../parser.js";
 
 import orbitToPac10k from './assets/orbitToPac10k.json' assert { type: "json" };
+import orbitToEth30k from './assets/orbitToEth30k.json' assert { type: "json" };
 import { SettlementSimulation } from "./index.js";
 
 let rpcUrl: string | undefined = process.env.RPC_URL;
@@ -37,6 +38,8 @@ const simulateAsync = async (
 
     const routingPlan = parse(swapResponse);    // parse swapnet API response
 
+    const { amountOutMinimum, unwrapOutput } = resolveEncodeOptions(routingPlan, encodeOptions);
+
     const calldata = router.encode(routingPlan, encodeOptions);     // use router object to encode calldata, with injected options
 
     // simulate the calldata with an `eth_call` RPC call, with additional state override to assume sufficient token balances and approvals
@@ -50,10 +53,10 @@ const simulateAsync = async (
             routingPlan.fromToken,
             routingPlan.toToken,
             routingPlan.amountIn,
+            unwrapOutput,
             calldata,
         );
 
-    const { amountOutMinimum } = resolveEncodeOptions(routingPlan, encodeOptions);
     if (amountOut < amountOutMinimum) {
         throw new Error(`Case ${caseName} failed as simulated amountOut ${amountOut} is less than amountOutMinimum ${amountOutMinimum}.`);
     }
@@ -62,3 +65,4 @@ const simulateAsync = async (
 }
 
 await simulateAsync('10k ORBIT to PAC', orbitToPac10k, { slippageTolerance: 0.01 }, 5358636);
+await simulateAsync('30k ORBIT to ETH', orbitToEth30k, { unwrapOutput: true, slippageTolerance: 0.01 }, 5364002);
