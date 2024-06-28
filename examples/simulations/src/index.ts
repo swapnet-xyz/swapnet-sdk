@@ -1,34 +1,25 @@
 import { type BlockTag, JsonRpcProvider, Network } from "ethers";
-
-import type { ISwapResponse } from "../common/interfaces.js";
-import type { IEncodeOptions } from "../routers/types.js";
-import { UniversalRouter } from "../routers/universalRouter/index.js";
-import { resolveEncodeOptions } from "../routers/routerBase.js";
-import { parse } from "../parser.js";
+import { IEncodeOptions, ISwapResponse, SettlementSimulation, UniversalRouter, parse, resolveEncodeOptions } from "@swapnet-xyz/sdk";
 
 import orbitToPac10k from './assets/orbitToPac10k.json' assert { type: "json" };
 import orbitToEth30k from './assets/orbitToEth30k.json' assert { type: "json" };
 import ethToOrbit10 from './assets/ethToOrbit10.json' assert { type: "json" };
-import { SettlementSimulation } from "./index.js";
-
-let rpcUrl: string | undefined = process.env.RPC_URL;
-if (rpcUrl === undefined || rpcUrl === "") {
-    throw new Error(`Failed to find rpc url from environment!`);
-};
 
 const chainId = 81457;
 const network = { chainId, name: "Blast Mainnet" };
 const provider = new JsonRpcProvider(
-    rpcUrl,
+    "https://blastl2-mainnet.public.blastapi.io",
     network,
     { staticNetwork: Network.from(network) },
 );
 
-const routerAddress: string = "0xAA539Bcf648C0b4F8984FcDEb5228827e7AAC3AE";     // universal router (proxy) deployed address
-const tokenProxyAddress: string = "0x000000000022d473030f116ddee9f6b43ac78ba3";     // permit2 deployed address
-const router = new UniversalRouter(chainId, routerAddress, tokenProxyAddress);
+const router = new UniversalRouter(
+    chainId,
+    "0xAA539Bcf648C0b4F8984FcDEb5228827e7AAC3AE",   // universal router (proxy) deployed address - by Ringswap
+    "0x000000000022d473030f116ddee9f6b43ac78ba3"    // permit2 deployed address - by Uniswap
+);
 
-const senderAddress: string = "0x3B2Be8413F34fc6491506B18c530A264c0f7adAE";     // user address
+const senderAddress: string = "0x3B2Be8413F34fc6491506B18c530A264c0f7adAE";     // user address - randomly chosen
 
 const simulateAsync = async (
     caseName: string,

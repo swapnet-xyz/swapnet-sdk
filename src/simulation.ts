@@ -1,6 +1,6 @@
 import type { BlockTag } from "ethers";
 import { Interface, JsonRpcProvider, toQuantity } from "ethers";
-import { LedgerState, permit2, addressAt, tokenAt } from "../ethers-override/index.js";
+import { LedgerState, permit2, addressAt, tokenAt } from "./ethers-override/index.js";
 
 // @ts-ignore
 import erc20 from '../abi/erc20.json' assert { type: "json" };
