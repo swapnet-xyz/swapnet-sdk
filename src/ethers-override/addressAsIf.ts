@@ -1,5 +1,17 @@
 
+import { toBeHex } from "ethers";
 import type { EthCallOverride } from "./types.js";
+
+const removeLeadingZero = (hexString: string): string => {
+
+    if (!hexString.startsWith('0x')) {
+        throw new Error(`Invalid hex string ${hexString}!`);
+    }
+    if (hexString.charAt(2) === '0') {
+        return `0x${hexString.slice(3)}`;
+    }
+    return hexString;
+}
 
 export class AddressAsIf {
     protected _field: "balance" | "nonce" | "code" | "stateDiff" | "state" | undefined = undefined;
@@ -38,13 +50,13 @@ export class AddressAsIf {
     }
 
     public is(value: any): AddressAsIf {
-        // if (this._field === "balance" || this._field === "nonce") {
-        //     if (typeof value !== 'bigint') {
-        //         throw new Error(`Invalid value type for field ${this._field}.`)
-        //     }
-        //     this._value = defaultAbiCoder.encode([ "uint" ], [ value ]);
-        //     return this;
-        // }
+        if (this._field === "balance" || this._field === "nonce") {
+            if (typeof value !== 'bigint') {
+                throw new Error(`Invalid value type for field ${this._field}.`)
+            }
+            this._value = removeLeadingZero(toBeHex(value));
+            return this;
+        }
         this._value = value.toString();
         return this;
     }

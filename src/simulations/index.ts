@@ -5,13 +5,10 @@ import { LedgerState, permit2, addressAt, tokenAt } from "../ethers-override/ind
 // @ts-ignore
 import erc20 from '../abi/erc20.json' assert { type: "json" };
 // @ts-ignore
-import multicall3RevisedAbi from '../abi/multicall3Revised.json' assert { type: "json" };
-// @ts-ignore
-import multicall3RevisedCode from '../deployedBytecode/multicall3Revised.json' assert { type: "json" };
+import multicall3Revised from '../abi/multicall3Revised.json' assert { type: "json" };
 
 const erc20Interface: Interface = new Interface(erc20.abi);
-const multicallInterface: Interface = new Interface(multicall3RevisedAbi.abi);
-const multicallDeployedCode: string = multicall3RevisedCode.deployedBytecode;
+const multicallInterface: Interface = new Interface(multicall3Revised.abi);
 
 const getGasForCalldata = (calldata: string): bigint => {
 
@@ -55,6 +52,7 @@ export class SettlementSimulation {
         inputTokenAddress: string,
         outputTokenAddress: string,
         amountIn: bigint,
+        wrapInput: boolean,
         upwrapOutput: boolean,
         calldata: string,
     ): Promise<{ gas: bigint, amountOut: bigint, }> {
@@ -62,55 +60,69 @@ export class SettlementSimulation {
             throw new Error(`No provider is connected with SettlementSimulation.`);
         }
 
+        let ethBalance: bigint = 10n ** 18n;
+        if (wrapInput) {
+            ethBalance += amountIn;
+        }
+
         const stateBuilder = this._ledgerState
             .asif(
                 // suppose sender has sufficient native token (1 ether) for the Tx
                 addressAt(senderAddress)
                     .balance()
-                    .is("0x1000000000000000000")
+                    .is(ethBalance)
             )
             .asif(
                 addressAt(senderAddress)
                     .code()
-                    .is(multicallDeployedCode)
-            )
-            .asif(
-                tokenAt(inputTokenAddress)
-                    .connect(this._provider)
-                    .balanceOf(senderAddress)
-                    .is(amountIn + 1n)
-            )
-            .asif(
-                tokenAt(inputTokenAddress)
-                    .connect(this._provider)
-                    .allowance(senderAddress, tokenProxyAddress === undefined ? routerAddress : tokenProxyAddress)
-                    .is(amountIn + 1n)
+                    .is(multicall3Revised.deployedBytecode)
             );
 
-        if (tokenProxyAddress !== undefined) {
-            stateBuilder.asif(
-                permit2(tokenProxyAddress)
-                    .allowance(senderAddress, inputTokenAddress, routerAddress)
-                    .is({
-                        nonce: 1n,
-                        expiration: BigInt(Math.floor(Date.now() / 1000) + 3600),
-                        amount: amountIn + 1n
-                    })
-            );
+        if (!wrapInput) {
+            stateBuilder
+                .asif(
+                    tokenAt(inputTokenAddress)
+                        .connect(this._provider)
+                        .balanceOf(senderAddress)
+                        .is(amountIn + 1n)
+                )
+                .asif(
+                    tokenAt(inputTokenAddress)
+                        .connect(this._provider)
+                        .allowance(senderAddress, tokenProxyAddress === undefined ? routerAddress : tokenProxyAddress)
+                        .is(amountIn + 1n)
+                );
+
+            if (tokenProxyAddress !== undefined) {
+                stateBuilder.asif(
+                    permit2(tokenProxyAddress)
+                        .allowance(senderAddress, inputTokenAddress, routerAddress)
+                        .is({
+                            nonce: 1n,
+                            expiration: BigInt(Math.floor(Date.now() / 1000) + 3600),
+                            amount: amountIn + 1n
+                        })
+                );
+            }
         }
         const [ blockTag, override ] = await stateBuilder.getStateAsync();
 
-        let balanceOfBuyTokenCall;
-        if (upwrapOutput) {
-            balanceOfBuyTokenCall = [senderAddress, multicallInterface.encodeFunctionData("getEthBalance", [ senderAddress ])];
-        }
-        else {
-            balanceOfBuyTokenCall = [outputTokenAddress, erc20Interface.encodeFunctionData("balanceOf", [ senderAddress ])];
+        let ethAmountToSend = 0n;
+        if (wrapInput) {
+            ethAmountToSend = amountIn;
         }
 
-        const multicallData = multicallInterface.encodeFunctionData("aggregate2", [[
+        let balanceOfBuyTokenCall;
+        if (upwrapOutput) {
+            balanceOfBuyTokenCall = [senderAddress, 0n, multicallInterface.encodeFunctionData("getEthBalance", [ senderAddress ])];
+        }
+        else {
+            balanceOfBuyTokenCall = [outputTokenAddress, 0n, erc20Interface.encodeFunctionData("balanceOf", [ senderAddress ])];
+        }
+
+        const multicallData = multicallInterface.encodeFunctionData("aggregate3", [[
             balanceOfBuyTokenCall,
-            [routerAddress, calldata],
+            [routerAddress, ethAmountToSend, calldata],
             balanceOfBuyTokenCall,
         ]]);
 
