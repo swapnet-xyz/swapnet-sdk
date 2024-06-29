@@ -1,0 +1,70 @@
+{
+    "aggregator": "swapnet",
+    "sell": {
+        "referenceId": 0,
+        "amount": "10000000000000000000000"
+    },
+    "buy": {
+        "referenceId": 1,
+        "amount": "2943559867392674295"
+    },
+    "nativeTokenUsdPrice": 3396.275304220612,
+    "tokens": [
+        {
+            "referenceId": 0,
+            "address": "0x4300000000000000000000000000000000000003",
+            "name": "USDB",
+            "symbol": "USDB",
+            "decimals": 18,
+            "usdPrice": 1
+        },
+        {
+            "referenceId": 1,
+            "address": "0x4300000000000000000000000000000000000004",
+            "name": "Wrapped Ether",
+            "symbol": "WETH",
+            "decimals": 18,
+            "usdPrice": 3396.275304220612
+        }
+    ],
+    "routes": [
+        {
+            "address": "0xf5A23bDD36a56EDe75D503F6f643d5eaF25B1a8F",
+            "name": "UniswapV3",
+            "details": {
+                "fee": 500
+            },
+            "fromTokens": [
+                {
+                    "referenceId": 0,
+                    "amount": "4083042240667266137755"
+                }
+            ],
+            "toTokens": [
+                {
+                    "referenceId": 1,
+                    "amount": "1202090587291106525"
+                }
+            ]
+        },
+        {
+            "address": "0x7f0DB0D77d0694F29c3f940b5B1F589FFf6EF2e0",
+            "name": "ThrusterV3",
+            "details": {
+                "fee": 500
+            },
+            "fromTokens": [
+                {
+                    "referenceId": 0,
+                    "amount": "5916957759332733862245"
+                }
+            ],
+            "toTokens": [
+                {
+                    "referenceId": 1,
+                    "amount": "1741469280101567770"
+                }
+            ]
+        }
+    ]
+}

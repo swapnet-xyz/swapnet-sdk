@@ -1,9 +1,11 @@
 import { type BlockTag, JsonRpcProvider, Network } from "ethers";
 import { IEncodeOptions, ISwapResponse, SettlementSimulation, UniversalRouter, parse, resolveEncodeOptions } from "@swapnet-xyz/sdk";
+// import { IEncodeOptions, ISwapResponse, SettlementSimulation, UniversalRouter, parse, resolveEncodeOptions } from "../../../src/index.js";
 
 import orbitToPac10k from './assets/orbitToPac10k.json' assert { type: "json" };
 import orbitToEth30k from './assets/orbitToEth30k.json' assert { type: "json" };
 import ethToOrbit10 from './assets/ethToOrbit10.json' assert { type: "json" };
+import usdbToWeth10k from './assets/usdbToWeth10k.json' assert { type: "json" };
 
 const chainId = 81457;
 const network = { chainId, name: "Blast Mainnet" };
@@ -37,6 +39,7 @@ const simulateAsync = async (
     // simulate the calldata with an `eth_call` RPC call, with additional state override to assume sufficient token balances and approvals
     const { amountOut } = await SettlementSimulation
         .from(blockTag)
+        // @ts-ignore
         .connect(provider)
         .runAsync(
             senderAddress,
@@ -60,3 +63,4 @@ const simulateAsync = async (
 await simulateAsync('10k ORBIT to PAC', orbitToPac10k, { slippageTolerance: 0.01 }, 5358636);
 await simulateAsync('30k ORBIT to ETH', orbitToEth30k, { unwrapOutput: true, slippageTolerance: 0.01 }, 5364002);
 await simulateAsync('10 ETH to ORBIT', ethToOrbit10, { wrapInput: true, slippageTolerance: 0.01 }, 5371440);
+await simulateAsync('10k USDB to WETH', usdbToWeth10k, { slippageTolerance: 0.01 }, 5439322);

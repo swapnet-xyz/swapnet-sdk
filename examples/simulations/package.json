@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@swapnet-xyz/sdk": "^1.0.7",
+    "@swapnet-xyz/sdk": "^1.0.9",
     "ethers": "^6.7.0"
   },
   "devDependencies": {
