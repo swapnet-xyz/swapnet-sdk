@@ -1,5 +1,4 @@
 import type { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "./common/interfaces.js";
-import type { TokenOperation } from "./common/routingPlan.js";
 
 const resolveErrorAsync = async (response: Response): Promise<{ succeeded: boolean; error: any; }> => {
     
@@ -121,7 +120,7 @@ export class SwapnetClient {
 
     public async getTokenPricesAsync(
         chainId: number,
-        tokenOps: TokenOperation [],
+        tokens: string [],
     ): Promise<{
         succeeded: true,
         tokenPrices: ITokenPrice [],
@@ -133,7 +132,7 @@ export class SwapnetClient {
         const url = `${this._baseUrl}/api/${this._apiVersion}/prices?` +
             `apiKey=${this._apiKey}&` +
             `chainId=${chainId}&` +
-            `tokens=${tokenOps.map(o => o.tokenInfo.address).join(',')}`;
+            `tokens=${tokens.join(',')}`;
 
         const response = await fetch(url);
         const { succeeded, error } = await resolveErrorAsync(response);
