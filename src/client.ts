@@ -1,6 +1,38 @@
 import type { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "./common/interfaces.js";
 import type { TokenOperation } from "./common/routingPlan.js";
 
+const resolveErrorAsync = async (response: Response): Promise<{ succeeded: boolean; error: any; }> => {
+    
+    if (response.status === 400 || response.status === 409 || response.status === 500) {
+        const { error } = await response.json() as { error: string}
+        return {
+            succeeded: false,
+            error,
+        };
+    }
+    else if (response.status !== 200) {
+        let error: string;
+        if (response.status >= 500) {
+            error = `Unknown server error with code ${response.status}.`;
+        }
+        else if (response.status >= 400) {
+            error = `Unknown client error with code ${response.status}.`;
+        }
+        else {
+            error = `Unknown status code ${response.status}.`;
+        }
+        return {
+            succeeded: false,
+            error,
+        };
+    }
+
+    return {
+        succeeded: true,
+        error: "",
+    };
+}
+
 export class SwapnetClient {
     constructor (
         private readonly _apiKey: string,
@@ -10,14 +42,33 @@ export class SwapnetClient {
 
     public async getSupportedTokensAsync(
         chainId: number,
-    ): Promise<ITokenStaticInfo[]> {
+    ): Promise<{
+        succeeded: true,
+        tokens: ITokenStaticInfo[],
+    } | {
+        succeeded: false,
+        error: string,
+    }> {
 
         const url = `${this._baseUrl}/api/${this._apiVersion}/tokens?` +
             `apiKey=${this._apiKey}&` + 
             `chainId=${chainId}`;
 
         const response = await fetch(url);
-        return (await response.json()) as ITokenStaticInfo[];
+
+        const { succeeded, error } = await resolveErrorAsync(response);
+        if (!succeeded) {
+            return {
+                succeeded,
+                error,
+            }
+        }
+
+        const tokens = (await response.json()) as ITokenStaticInfo[];
+        return {
+            succeeded,
+            tokens,
+        }
     }
 
     public async swapAsync(
@@ -53,34 +104,17 @@ export class SwapnetClient {
             (userAddress !== undefined ? `&userAddress=${userAddress}` : "");
 
         const response = await fetch(url);
-
-        if (response.status === 400 || response.status === 409 || response.status === 500) {
-            const { error } = await response.json() as { error: string}
+        const { succeeded, error } = await resolveErrorAsync(response);
+        if (!succeeded) {
             return {
-                succeeded: false,
+                succeeded,
                 error,
-            };
-        }
-        else if (response.status !== 200) {
-            let error: string;
-            if (response.status >= 500) {
-                error = `Unknown server error with code ${response.status}.`;
             }
-            else if (response.status >= 400) {
-                error = `Unknown client error with code ${response.status}.`;
-            }
-            else {
-                error = `Unknown status code ${response.status}.`;
-            }
-            return {
-                succeeded: false,
-                error,
-            };
         }
 
         const swapResponse = (await response.json()) as ISwapResponse;
         return {
-            succeeded: true,
+            succeeded,
             swapResponse,
         };
     }
@@ -88,7 +122,13 @@ export class SwapnetClient {
     public async getTokenPricesAsync(
         chainId: number,
         tokenOps: TokenOperation [],
-    ): Promise<ITokenPrice []> {
+    ): Promise<{
+        succeeded: true,
+        tokenPrices: ITokenPrice [],
+    } | {
+        succeeded: false,
+        error: string,
+    }> {
 
         const url = `${this._baseUrl}/api/${this._apiVersion}/prices?` +
             `apiKey=${this._apiKey}&` +
@@ -96,6 +136,18 @@ export class SwapnetClient {
             `tokens=${tokenOps.map(o => o.tokenInfo.address).join(',')}`;
 
         const response = await fetch(url);
-        return (await response.json()) as ITokenPrice [];
+        const { succeeded, error } = await resolveErrorAsync(response);
+        if (!succeeded) {
+            return {
+                succeeded,
+                error,
+            }
+        }
+
+        const tokenPrices = (await response.json()) as ITokenPrice [];
+        return {
+            succeeded,
+            tokenPrices,
+        }
     }
 }
