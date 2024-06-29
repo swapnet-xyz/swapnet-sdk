@@ -1,6 +1,6 @@
 
 // @ts-ignore
-import universalRouterData from './universalRouter.json' assert { type: "json" };
+import universalRouterData from '../../abi/universalRouter.json' assert { type: "json" };
 
 import { Interface, solidityPacked } from 'ethers';
 import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames, type IPermitWithSignature } from './routerCommands.js';
