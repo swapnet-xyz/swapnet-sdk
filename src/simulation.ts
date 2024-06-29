@@ -82,13 +82,11 @@ export class SettlementSimulation {
             stateBuilder
                 .asif(
                     tokenAt(inputTokenAddress)
-                        .connect(this._provider)
                         .balanceOf(senderAddress)
                         .is(amountIn + 1n)
                 )
                 .asif(
                     tokenAt(inputTokenAddress)
-                        .connect(this._provider)
                         .allowance(senderAddress, tokenProxyAddress === undefined ? routerAddress : tokenProxyAddress)
                         .is(amountIn + 1n)
                 );
@@ -130,7 +128,7 @@ export class SettlementSimulation {
                 from: senderAddress,
                 to: senderAddress,
                 gas: "0x4c4b40",
-                gasPrice: "0x976A4E",
+                gasPrice: "0x1076A4E",
                 value: "0x0",
                 data: multicallData,
             },

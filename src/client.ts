@@ -1,6 +1,6 @@
 import type { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "./common/interfaces.js";
 
-const resolveErrorAsync = async (response: Response): Promise<{ succeeded: boolean; error: any; }> => {
+const resolveErrorAsync = async (response: Response): Promise<{ succeeded: boolean; error: string; }> => {
     
     if (response.status === 400 || response.status === 409 || response.status === 500) {
         const { error } = await response.json() as { error: string}
@@ -58,14 +58,14 @@ export class SwapnetClient {
         const { succeeded, error } = await resolveErrorAsync(response);
         if (!succeeded) {
             return {
-                succeeded,
+                succeeded: false,
                 error,
             }
         }
 
         const tokens = (await response.json()) as ITokenStaticInfo[];
         return {
-            succeeded,
+            succeeded: true,
             tokens,
         }
     }
@@ -106,14 +106,14 @@ export class SwapnetClient {
         const { succeeded, error } = await resolveErrorAsync(response);
         if (!succeeded) {
             return {
-                succeeded,
+                succeeded: false,
                 error,
             }
         }
 
         const swapResponse = (await response.json()) as ISwapResponse;
         return {
-            succeeded,
+            succeeded: true,
             swapResponse,
         };
     }
@@ -138,14 +138,14 @@ export class SwapnetClient {
         const { succeeded, error } = await resolveErrorAsync(response);
         if (!succeeded) {
             return {
-                succeeded,
+                succeeded: false,
                 error,
             }
         }
 
         const tokenPrices = (await response.json()) as ITokenPrice [];
         return {
-            succeeded,
+            succeeded: true,
             tokenPrices,
         }
     }
