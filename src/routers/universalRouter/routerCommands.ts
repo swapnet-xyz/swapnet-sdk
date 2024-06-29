@@ -178,3 +178,17 @@ export enum UniswapV3ForkNames {
   Thruster = 1,
   Ringswap = 2,
 }
+
+export interface IPermitWithSignature {
+  permit: {
+    details: {
+      token: string,
+      amount: bigint,
+      expiration: bigint,
+      nonce: bigint,
+    },
+    spender: string,
+    sigDeadline: bigint,
+  },
+  signature: string,
+}

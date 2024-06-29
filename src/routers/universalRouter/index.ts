@@ -3,7 +3,7 @@
 import universalRouterData from './universalRouter.json' assert { type: "json" };
 
 import { Interface, solidityPacked } from 'ethers';
-import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames } from './routerCommands.js';
+import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames, type IPermitWithSignature } from './routerCommands.js';
 import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
 import { type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
 import { RouterBase, resolveEncodeOptions } from '../routerBase.js';
@@ -62,10 +62,7 @@ export class UniversalRouter extends RouterBase {
         routingPlan: IRoutingPlan,
         options: IEncodeOptions & 
         {
-            inputTokenPermit?: {
-                permitSingle: string,
-                signature: string,
-            },
+            inputTokenPermit?: IPermitWithSignature,
         }
     ): string {
         const {
@@ -86,12 +83,12 @@ export class UniversalRouter extends RouterBase {
 
 
         if (inputTokenPermit !== undefined) {
-            const { permitSingle, signature} = inputTokenPermit;
-            planner.addCommand(CommandType.PERMIT2_PERMIT, [permitSingle, signature]);
+            const { permit, signature} = inputTokenPermit;
+            planner.addCommand(CommandType.PERMIT2_PERMIT, [ permit, signature ]);
         }
 
         if (wrapInput) {
-            planner.addCommand(CommandType.WRAP_ETH, [ROUTER_AS_RECIPIENT, amountIn]);
+            planner.addCommand(CommandType.WRAP_ETH, [ ROUTER_AS_RECIPIENT, amountIn ]);
         }
         else {
             planner.addCommand(CommandType.PERMIT2_TRANSFER_FROM, [
