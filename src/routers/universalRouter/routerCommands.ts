@@ -1,6 +1,7 @@
 // Copied from `https://github.com/Uniswap/universal-router-sdk/blob/main/src/swapRouter.ts`
 // with minor update (ethers v5 -> v6)
 import { AbiCoder } from 'ethers'
+import type { BigNumberish } from 'ethers/utils';
 
 const defaultAbiCoder = AbiCoder.defaultAbiCoder();
 
@@ -179,16 +180,28 @@ export enum UniswapV3ForkNames {
   Ringswap = 2,
 }
 
+export interface PermitDetails {
+  token: string;
+  amount: BigNumberish;
+  expiration: BigNumberish;
+  nonce: BigNumberish;
+}
+
+export interface PermitSingle {
+  details: PermitDetails;
+  spender: string;
+  sigDeadline: BigNumberish;
+}
+
+interface Permit extends PermitSingle {
+  sigDeadline: number
+}
+
+export interface PermitSignature extends Permit {
+  signature: string
+}
+
 export interface IPermitWithSignature {
-  permit: {
-    details: {
-      token: string,
-      amount: bigint,
-      expiration: bigint,
-      nonce: bigint,
-    },
-    spender: string,
-    sigDeadline: bigint,
-  },
+  permit: PermitSignature,
   signature: string,
 }
