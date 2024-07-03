@@ -7,10 +7,11 @@ import erc20 from './abi/erc20.json' assert { type: "json" };
 // @ts-ignore
 import multicall3Revised from './abi/multicall3Revised.json' assert { type: "json" };
 
-const erc20Interface: Interface = new Interface(erc20.abi);
-const multicallInterface: Interface = new Interface(multicall3Revised.abi);
+export const erc20Interface: Interface = new Interface(erc20.abi);
+export const multicallInterface: Interface = new Interface(multicall3Revised.abi);
+export const multicallDeployedCode: string = multicall3Revised.deployedBytecode;
 
-const getGasForCalldata = (calldata: string): bigint => {
+export const getGasForCalldata = (calldata: string): bigint => {
 
     let zeros: bigint = 0n;
     let nonZeros: bigint = 0n;
@@ -75,7 +76,7 @@ export class SettlementSimulation {
             .asif(
                 addressAt(senderAddress)
                     .code()
-                    .is(multicall3Revised.deployedBytecode)
+                    .is(multicallDeployedCode)
             );
 
         if (!wrapInput) {
