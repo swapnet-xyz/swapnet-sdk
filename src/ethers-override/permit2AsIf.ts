@@ -87,4 +87,5 @@ export class Permit2AsIf extends AddressAsIf {
     }
 };
 
-export const permit2 = (permit2Address: string): Permit2AsIf => new Permit2AsIf(permit2Address);
+export const PERMIT2_ADDRESS = "0x000000000022d473030f116ddee9f6b43ac78ba3";
+export const permit2 = (): Permit2AsIf => new Permit2AsIf(PERMIT2_ADDRESS);

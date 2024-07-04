@@ -1,6 +1,6 @@
 import type { BlockTag } from "ethers";
 import { Interface, JsonRpcProvider, toQuantity } from "ethers";
-import { LedgerState, permit2, addressAt, tokenAt } from "./ethers-override/index.js";
+import { LedgerState, permit2, addressAt, tokenAt, PERMIT2_ADDRESS, AddressAsIf } from "./ethers-override/index.js";
 
 // @ts-ignore
 import erc20 from './abi/erc20.json' assert { type: "json" };
@@ -56,6 +56,7 @@ export class SettlementSimulation {
         wrapInput: boolean,
         upwrapOutput: boolean,
         calldata: string,
+        otherAsIfs: AddressAsIf [] = [],
     ): Promise<{ gas: bigint, amountOut: bigint, }> {
         if (this._provider === undefined) {
             throw new Error(`No provider is connected with SettlementSimulation.`);
@@ -92,9 +93,9 @@ export class SettlementSimulation {
                         .is(amountIn + 1n)
                 );
 
-            if (tokenProxyAddress !== undefined) {
+            if (tokenProxyAddress !== undefined && tokenProxyAddress.toLowerCase() === PERMIT2_ADDRESS) {
                 stateBuilder.asif(
-                    permit2(tokenProxyAddress)
+                    permit2()
                         .allowance(senderAddress, inputTokenAddress, routerAddress)
                         .is({
                             nonce: 1n,
@@ -104,6 +105,11 @@ export class SettlementSimulation {
                 );
             }
         }
+
+        otherAsIfs.forEach(a => {
+            stateBuilder.asif(a);
+        });
+
         const [ blockTag, override ] = await stateBuilder.getStateAsync();
 
         let ethAmountToSend = 0n;
