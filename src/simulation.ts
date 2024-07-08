@@ -135,7 +135,7 @@ export class SettlementSimulation {
                 from: senderAddress,
                 to: senderAddress,
                 gas: "0x4c4b40",
-                gasPrice: "0x1076A4E",
+                gasPrice: "0x1076A4E000",
                 value: "0x0",
                 data: multicallData,
             },
