@@ -54,7 +54,7 @@ const toV3ForkName = (protocol: string): UniswapV3ForkNames => {
 }
 
 export class UniversalRouter extends RouterBase {
-    public constructor(_chainId: number, _routerAddress: string | undefined = undefined, _tokenProxyAddress: string | undefined = undefined) {
+    public constructor(_chainId: number, _routerAddress: string, _tokenProxyAddress: string | undefined = undefined) {
         super("universal router", _chainId, _routerAddress, _tokenProxyAddress);
     }
 

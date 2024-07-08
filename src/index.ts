@@ -6,7 +6,6 @@ export * from './client.js'
 export * from './parser.js'
 export * from './utils.js'
 
-export * from './routers/routerInfo.js'
 export * from './routers/types.js'
 export * from './routers/routerBase.js'
 export * from './routers/universalRouter/index.js'
