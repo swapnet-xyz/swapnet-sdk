@@ -17,7 +17,7 @@ const provider = new JsonRpcProvider(
 
 const router = new UniversalRouter(
     chainId,
-    "0xAA539Bcf648C0b4F8984FcDEb5228827e7AAC3AE",   // universal router (proxy) deployed address - by Ringswap
+    "0x2C8754B44865002415dD5CEBa6Cd67258D1eCe2e",   // universal router (proxy) deployed address - by Ringswap
     "0x000000000022d473030f116ddee9f6b43ac78ba3"    // permit2 deployed address - by Uniswap
 );
 
