@@ -28,10 +28,18 @@ export interface ILimitOrderDetails {
     signature: string;
 }
 
+export interface IBebopLimitOrderDetails extends ILimitOrderDetails {
+    taker: string;
+    receiver: string;
+    packedCommands: bigint;
+    orderFlags: bigint;
+    signatureFlags: bigint;
+}
+
 export interface IRouteInfoInResponse {
     address: string;
     name: string;
-    details?: IUniswapV3Details | ILimitOrderDetails;
+    details?: IUniswapV3Details | ILimitOrderDetails | IBebopLimitOrderDetails;
     fromTokens: Array<ITokenAmountInfo>;
     toTokens: Array<ITokenAmountInfo>;
 }
