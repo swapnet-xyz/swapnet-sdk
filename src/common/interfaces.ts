@@ -18,6 +18,7 @@ export interface IUniswapV3Details {
 }
 
 export interface ILimitOrderDetails {
+    id: string;
     maker: string;
     makerToken: string;
     takerToken: string;
