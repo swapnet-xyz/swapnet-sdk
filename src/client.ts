@@ -77,6 +77,7 @@ export class SwapnetClient {
         sellAmount: bigint | undefined,
         buyAmount: bigint | undefined,
         userAddress: string | undefined = undefined,
+        includeRfq: boolean | undefined = undefined,
     ): Promise<{
         succeeded: true,
         swapResponse: ISwapResponse,
@@ -100,7 +101,8 @@ export class SwapnetClient {
             `buyToken=${buyTokenAddress}` +
             (sellAmount !== undefined ? `&sellAmount=${sellAmount.toString()}` : "") +
             (buyAmount !== undefined ? `&buyAmount=${buyAmount.toString()}` : "") +
-            (userAddress !== undefined ? `&userAddress=${userAddress}` : "");
+            (userAddress !== undefined ? `&userAddress=${userAddress}` : "") +
+            (includeRfq !== undefined ? `&includeRfq=${includeRfq}` : "");
 
         const response = await fetch(url);
         const { succeeded, error } = await resolveErrorAsync(response);
