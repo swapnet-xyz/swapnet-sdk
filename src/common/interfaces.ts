@@ -17,30 +17,31 @@ export interface IUniswapV3Details {
     fee: number;
 }
 
-export interface ILimitOrderDetails {
+export interface ILimitOrderDetailsBase {
     id: string;
-    maker: string;
     makerToken: string;
     takerToken: string;
     makerAmount: bigint;
     takerAmount: bigint;
-    nonce: bigint;
     deadline: bigint;
+}
+
+export interface ISwapnetLimitOrderDetails extends ILimitOrderDetailsBase {
+    maker: string;
+    nonce: bigint;
     signature: string;
 }
 
-export interface IBebopLimitOrderDetails extends ILimitOrderDetails {
-    taker: string;
-    receiver: string;
-    packedCommands: bigint;
-    orderFlags: bigint;
-    signatureFlags: bigint;
+export interface IBebopLimitOrderDetails extends ILimitOrderDetailsBase {
+    isSingleOrder: boolean;
+    partialFillOffset: number;
+    calldata: string;
 }
 
 export interface IRouteInfoInResponse {
     address: string;
     name: string;
-    details?: IUniswapV3Details | ILimitOrderDetails | IBebopLimitOrderDetails;
+    details?: IUniswapV3Details | ILimitOrderDetailsBase;
     fromTokens: Array<ITokenAmountInfo>;
     toTokens: Array<ITokenAmountInfo>;
 }

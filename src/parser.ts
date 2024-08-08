@@ -1,5 +1,5 @@
 import Graph from "graph-data-structure";
-import { type ILimitOrderDetails, type IRouteInfoInResponse, type ISwapResponse, type IUniswapV3Details, } from "./common/interfaces.js";
+import { type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type ISwapResponse, type IUniswapV3Details, } from "./common/interfaces.js";
 import { type Swap, type TokenOperation, type IRoutingPlan, type LiquidityInfo, } from "./common/routingPlan.js";
 
 const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): Swap => {
@@ -41,7 +41,7 @@ const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOper
         }
     }
     else if (route.name.startsWith('Orderbook')) {
-        const details = route.details as ILimitOrderDetails;
+        const details = route.details as ISwapnetLimitOrderDetails;
         liquidityInfo = {
             protocol: "LimitOrder",
             address: details.maker,
