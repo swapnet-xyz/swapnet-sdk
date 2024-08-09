@@ -19,6 +19,11 @@ export interface UniswapV3Info extends LiquidityInfoBase {
     fee: bigint;
 };
 
+export interface BebopLimitOrderInfo extends LiquidityInfoBase {
+    calldata: string;
+    partialFillOffset: number;
+};
+
 // export interface UniswapV2Info extends LiquidityInfoBase {
 // };
 
@@ -27,7 +32,8 @@ export interface UniswapV3Info extends LiquidityInfoBase {
 
 export type LiquidityInfo = LiquidityInfoBase
     | LimitOrderInfo
-    | UniswapV3Info;
+    | UniswapV3Info
+    | BebopLimitOrderInfo;
 
 export interface Swap {
     fromTokenOp: TokenOperation;

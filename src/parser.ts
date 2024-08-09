@@ -1,5 +1,5 @@
 import Graph from "graph-data-structure";
-import { type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type ISwapResponse, type IUniswapV3Details, } from "./common/interfaces.js";
+import { type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type ISwapResponse, type IUniswapV3Details, } from "./common/interfaces.js";
 import { type Swap, type TokenOperation, type IRoutingPlan, type LiquidityInfo, } from "./common/routingPlan.js";
 
 const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): Swap => {
@@ -40,19 +40,30 @@ const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOper
             address: route.address,
         }
     }
-    else if (route.name.startsWith('Orderbook')) {
-        const details = route.details as ISwapnetLimitOrderDetails;
-        liquidityInfo = {
-            protocol: "LimitOrder",
-            address: details.maker,
-            maker: details.maker,
-            makerToken: details.makerToken,
-            takerToken: details.takerToken,
-            makerAmount: BigInt(details.makerAmount),
-            takerAmount: BigInt(details.takerAmount),
-            nonce: BigInt(details.nonce),
-            deadline: BigInt(details.deadline),
-            signature: details.signature,
+    else if (route.name.startsWith('LimitOrder')) {
+        if (route.name === 'LimitOrder-Bebop') {
+            const details = route.details as IBebopLimitOrderDetails;
+            liquidityInfo = {
+                protocol: details.isSingleOrder ? "BebopSingle" : "BebopAggregate",
+                address: route.address,
+                calldata: details.calldata,
+                partialFillOffset: details.partialFillOffset,
+            };
+        }
+        else {
+            const details = route.details as ISwapnetLimitOrderDetails;
+            liquidityInfo = {
+                protocol: "LimitOrder",
+                address: details.maker,
+                maker: details.maker,
+                makerToken: details.makerToken,
+                takerToken: details.takerToken,
+                makerAmount: BigInt(details.makerAmount),
+                takerAmount: BigInt(details.takerAmount),
+                nonce: BigInt(details.nonce),
+                deadline: BigInt(details.deadline),
+                signature: details.signature,
+            };
         }
     }
     else {
