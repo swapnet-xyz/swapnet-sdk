@@ -38,10 +38,12 @@ export interface IBebopLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
+export type IEncodingDetails = IUniswapV3Details | ILimitOrderDetailsBase;
+
 export interface IRouteInfoInResponse {
     address: string;
     name: string;
-    details?: IUniswapV3Details | ILimitOrderDetailsBase;
+    details?: IEncodingDetails;
     fromTokens: Array<ITokenAmountInfo>;
     toTokens: Array<ITokenAmountInfo>;
 }
