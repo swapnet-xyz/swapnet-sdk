@@ -5,6 +5,7 @@ export * from './common/routingPlan.js'
 export * from './client.js'
 export * from './parser.js'
 export * from './utils.js'
+export * from './e2e.js'
 
 export * from './routers/types.js'
 export * from './routers/routerBase.js'

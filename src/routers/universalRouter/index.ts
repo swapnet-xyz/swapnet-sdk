@@ -244,7 +244,7 @@ export class UniversalRouter extends RouterBase {
 
 export const universalRouterByChainId: Map<number, UniversalRouter> = new Map();
 
-Object.entries(deployedAddressesByChainId).map(([routerAddress, chainIdStr]) => {
+Object.entries(deployedAddressesByChainId).map(([chainIdStr, routerAddress]) => {
     const chainId = parseInt(chainIdStr);
     universalRouterByChainId.set(chainId, new UniversalRouter(chainId, routerAddress));
 });
