@@ -1,13 +1,17 @@
 
+import { Interface, solidityPacked } from 'ethers';
+
 // @ts-ignore
 import universalRouterData from '../../abi/universalRouter.json' assert { type: "json" };
-
-import { Interface, solidityPacked } from 'ethers';
-import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames, type IPermitWithSignature } from './routerCommands.js';
-import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
 import { type IRoutingPlan, type UniswapV3Info } from '../../common/routingPlan.js';
+import { PERMIT2_ADDRESS } from '../../ethers-override/permit2AsIf.js';
 import { RouterBase, resolveEncodeOptions } from '../routerBase.js';
 import type { IEncodeOptions } from '../types.js';
+
+import { deployedAddressesByChainId } from './addresses.js';
+import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
+import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames, type IPermitWithSignature } from './routerCommands.js';
+
 
 const CONTRACT_BALANCE = 2n ** 255n;
 const SENDER_AS_RECIPIENT = '0x0000000000000000000000000000000000000001';
@@ -54,7 +58,7 @@ const toV3ForkName = (protocol: string): UniswapV3ForkNames => {
 }
 
 export class UniversalRouter extends RouterBase {
-    public constructor(_chainId: number, _routerAddress: string, _tokenProxyAddress: string | undefined = undefined) {
+    public constructor(_chainId: number, _routerAddress: string, _tokenProxyAddress: string = PERMIT2_ADDRESS) {
         super("universal router", _chainId, _routerAddress, _tokenProxyAddress);
     }
 
@@ -237,3 +241,10 @@ export class UniversalRouter extends RouterBase {
         return calldata;
     }
 }
+
+export const universalRouterByChainId: Map<number, UniversalRouter> = new Map();
+
+Object.entries(deployedAddressesByChainId).map(([routerAddress, chainIdStr]) => {
+    const chainId = parseInt(chainIdStr);
+    universalRouterByChainId.set(chainId, new UniversalRouter(chainId, routerAddress));
+});
