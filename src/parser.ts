@@ -19,6 +19,7 @@ const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOper
     }
     else if (
         route.name.startsWith('UniswapV3') ||
+        route.name.startsWith('PancakeswapV3') ||
         route.name.startsWith('ThrusterV3') ||
         route.name.startsWith('RingswapV3')
     ) {
