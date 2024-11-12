@@ -25,3 +25,5 @@ export enum LiquiditySourceUname {
     RingswapV2 = "RingswapV2",
     Cetus = "Cetus",
 };
+
+export const universalRouterUname: string = "universal router";

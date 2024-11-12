@@ -40,13 +40,6 @@ export const swapApiSupportedLiquiditySourcesByChainId: { [chainId in ChainId]: 
     ],
 };
 
-export const universalRouterDeployedChainIds = [
-    ChainId.EthereumMainnet,
-    ChainId.ArbitrumOne,
-    ChainId.BaseMainnet,
-    ChainId.BlastMainnet,
-];
-
 export const universalRouterSupportedLiquiditySourcesByChainId: { [chainId: number]: LiquiditySourceUname [] } = {
     [ChainId.EthereumMainnet]: [
         LiquiditySourceUname.UniswapV2,
