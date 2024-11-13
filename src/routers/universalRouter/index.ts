@@ -11,7 +11,7 @@ import type { IEncodeOptions } from '../types.js';
 import { deployedAddressesByChainId } from './addresses.js';
 import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
 import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames, type IPermitWithSignature } from './routerCommands.js';
-import { LiquiditySourceUname } from '../../common/unames.js';
+import { LiquiditySourceUname, universalRouterUname } from '../../common/unames.js';
 
 
 const CONTRACT_BALANCE = 2n ** 255n;
@@ -60,7 +60,7 @@ const toV3ForkName = (source: LiquiditySourceUname): UniswapV3ForkNames => {
 
 export class UniversalRouter extends RouterBase {
     public constructor(_chainId: number, _routerAddress: string, _tokenProxyAddress: string = PERMIT2_ADDRESS) {
-        super("universal router", _chainId, _routerAddress, _tokenProxyAddress);
+        super(universalRouterUname, _chainId, _routerAddress, _tokenProxyAddress);
     }
 
     public encode(
