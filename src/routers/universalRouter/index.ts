@@ -121,13 +121,13 @@ export class UniversalRouter extends RouterBase {
                 }
 
                 if (
-                    liquidityInfo.protocol === "UniswapV2" ||
-                    liquidityInfo.protocol === "ThrusterV2-3k" ||
-                    liquidityInfo.protocol === "ThrusterV2-10k" ||
-                    liquidityInfo.protocol === "RingswapV2"
+                    liquidityInfo.source === "UniswapV2" ||
+                    liquidityInfo.source === "ThrusterV2-3k" ||
+                    liquidityInfo.source === "ThrusterV2-10k" ||
+                    liquidityInfo.source === "RingswapV2"
                 ) {
                     let path = [ fromToken, toToken ];
-                    if (liquidityInfo.protocol === "RingswapV2") {
+                    if (liquidityInfo.source === "RingswapV2") {
                         const fewWrappedFromToken = getFewWrappedTokenAddress(fromToken);
                         const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
                         path = [ fewWrappedFromToken, fewWrappedToToken ];
@@ -146,10 +146,10 @@ export class UniversalRouter extends RouterBase {
                         0n, // minAmountOut
                         path,
                         false,  // payerIsUser
-                        toV2ForkName(liquidityInfo.protocol),
+                        toV2ForkName(liquidityInfo.source),
                     ]);
 
-                    if (liquidityInfo.protocol === "RingswapV2") {
+                    if (liquidityInfo.source === "RingswapV2") {
                         const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fewWrappedToToken,
@@ -160,12 +160,12 @@ export class UniversalRouter extends RouterBase {
                     }
                 }
                 else if (
-                    liquidityInfo.protocol === "UniswapV3" ||
-                    liquidityInfo.protocol === "ThrusterV3" ||
-                    liquidityInfo.protocol === "RingswapV3"
+                    liquidityInfo.source === "UniswapV3" ||
+                    liquidityInfo.source === "ThrusterV3" ||
+                    liquidityInfo.source === "RingswapV3"
                 ) {
                     let path: string;
-                    if (liquidityInfo.protocol === "RingswapV3") {
+                    if (liquidityInfo.source === "RingswapV3") {
                         const fewWrappedFromToken = getFewWrappedTokenAddress(fromToken);
                         const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
                         path = encodeV3RouteToPath(fewWrappedFromToken, fewWrappedToToken, Number((liquidityInfo as UniswapV3Info).fee));
@@ -187,10 +187,10 @@ export class UniversalRouter extends RouterBase {
                         0n, // minAmountOut
                         path,
                         false,  // payerIsUser
-                        toV3ForkName(liquidityInfo.protocol),
+                        toV3ForkName(liquidityInfo.source),
                     ]);
 
-                    if (liquidityInfo.protocol === "RingswapV3") {
+                    if (liquidityInfo.source === "RingswapV3") {
                         const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fewWrappedToToken,
@@ -200,7 +200,7 @@ export class UniversalRouter extends RouterBase {
                         ]);
                     }
                 }
-                else if (liquidityInfo.protocol === "CurveV1") {
+                else if (liquidityInfo.source === "CurveV1") {
                     planner.addCommand(CommandType.CURVE_V1, [
                         liquidityInfo.address,
                         fromToken,
@@ -210,7 +210,7 @@ export class UniversalRouter extends RouterBase {
                     ]);
                 }
                 else {
-                    throw new Error(`Unknown protocol ${liquidityInfo.protocol}!`);
+                    throw new Error(`Unknown protocol ${liquidityInfo.source}!`);
                 }
             });
         });

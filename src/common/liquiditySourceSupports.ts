@@ -15,7 +15,7 @@ export const swapApiSupportedLiquiditySourcesByChainId: { [chainId in ChainId]: 
         LiquiditySourceUname.SushiswapV2,
         LiquiditySourceUname.SushiswapV3,
         LiquiditySourceUname.CurveV1,
-        LiquiditySourceUname.Orderbook_Bebop,
+        LiquiditySourceUname.BebopOrderbook,
     ],
     [ChainId.BaseMainnet]: [
         LiquiditySourceUname.Aerodrome,
@@ -24,7 +24,7 @@ export const swapApiSupportedLiquiditySourcesByChainId: { [chainId in ChainId]: 
         LiquiditySourceUname.PancakeswapV3,
         LiquiditySourceUname.SushiswapV2,
         LiquiditySourceUname.SushiswapV3,
-        LiquiditySourceUname.Orderbook_Bebop,
+        LiquiditySourceUname.BebopOrderbook,
     ],
     [ChainId.BlastMainnet]: [
         LiquiditySourceUname.ThrusterV2_3k,

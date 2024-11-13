@@ -130,7 +130,7 @@ const liquiditySourceFactByUname: { [liquiditySource in LiquiditySourceUname]: L
         }
     },
 
-    [LiquiditySourceUname.Orderbook_Bebop]: {
+    [LiquiditySourceUname.BebopOrderbook]: {
         default: {
             settlementContractAddress: "0xbbbbbbb520d69a9775e85b458c58c648259fad5f",
         },
@@ -148,6 +148,21 @@ const liquiditySourceFactByUname: { [liquiditySource in LiquiditySourceUname]: L
                 },
             },
         }
+    },
+
+    [LiquiditySourceUname.BebopLimitOrder]: {
+        default: {},
+        overrideByChain: {},
+    },
+
+    [LiquiditySourceUname.NativeOrderbook]: {
+        default: {},
+        overrideByChain: {},
+    },
+
+    [LiquiditySourceUname.NativeLimitOrder]: {
+        default: {},
+        overrideByChain: {},
     },
 
     // https://aerodrome.finance/security#contracts
