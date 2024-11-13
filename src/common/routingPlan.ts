@@ -1,6 +1,7 @@
+import type { LiquiditySourceUname } from "./unames.js";
 
 export interface LiquidityInfoBase {
-    source: string;
+    source: LiquiditySourceUname;
     address: string;
 };
 
