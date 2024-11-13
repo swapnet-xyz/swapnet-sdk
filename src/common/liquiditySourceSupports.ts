@@ -1,6 +1,7 @@
+import type { PartialRecord } from "./typeUtils.js";
 import { ChainId, LiquiditySourceUname } from "./unames.js";
 
-export const swapApiSupportedLiquiditySourcesByChainId: { [chainId in ChainId]: LiquiditySourceUname [] } = {
+export const swapApiSupportedLiquiditySourcesByChainId: Record<ChainId, LiquiditySourceUname []> = {
     [ChainId.EthereumMainnet]: [
         LiquiditySourceUname.UniswapV2,
         LiquiditySourceUname.UniswapV3,
@@ -40,7 +41,7 @@ export const swapApiSupportedLiquiditySourcesByChainId: { [chainId in ChainId]: 
     ],
 };
 
-export const universalRouterSupportedLiquiditySourcesByChainId: { [chainId: number]: LiquiditySourceUname [] } = {
+export const universalRouterSupportedLiquiditySourcesByChainId: PartialRecord<ChainId, LiquiditySourceUname []> = {
     [ChainId.EthereumMainnet]: [
         LiquiditySourceUname.UniswapV2,
         LiquiditySourceUname.UniswapV3,

@@ -1,4 +1,5 @@
 import { type IRoutingPlan } from "../common/routingPlan.js";
+import type { ChainId } from "../common/unames.js";
 import { toAmountOutMinimum } from "../utils.js";
 import { type IEncodeOptions, type IResolvedEncodeOptions, type IRouter } from "./types.js";
 
@@ -7,7 +8,7 @@ export abstract class RouterBase implements IRouter {
 
     public constructor(
         public readonly name: string,
-        public readonly chainId: number,
+        public readonly chainId: ChainId,
         public readonly routerAddress: string,
         public readonly tokenProxyAddress: string | undefined = undefined) {
     }

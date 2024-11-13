@@ -1,4 +1,5 @@
 import { type IRoutingPlan } from "../common/routingPlan.js";
+import type { ChainId } from "../common/unames.js";
 
 
 export interface IEncodeOptions {
@@ -19,7 +20,7 @@ export interface IResolvedEncodeOptions {
 
 export interface IRouterInfo {
     name: string;
-    chainId: number;
+    chainId: ChainId;
     routerAddress: string;
     tokenProxyAddress: string | undefined;
 };

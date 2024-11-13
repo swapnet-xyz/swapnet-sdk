@@ -11,7 +11,7 @@ import type { IEncodeOptions } from '../types.js';
 import { deployedAddressesByChainId } from './addresses.js';
 import { getFewWrappedTokenAddress } from './fewTokenHelper.js';
 import { CommandType, RoutePlanner, UniswapV2ForkNames, UniswapV3ForkNames, type IPermitWithSignature } from './routerCommands.js';
-import { LiquiditySourceUname, universalRouterUname } from '../../common/unames.js';
+import { ChainId, LiquiditySourceUname, universalRouterUname } from '../../common/unames.js';
 
 
 const CONTRACT_BALANCE = 2n ** 255n;
@@ -243,9 +243,9 @@ export class UniversalRouter extends RouterBase {
     }
 }
 
-export const universalRouterByChainId: Map<number, UniversalRouter> = new Map();
+export const universalRouterByChainId: Map<ChainId, UniversalRouter> = new Map();
 
 Object.entries(deployedAddressesByChainId).map(([chainIdStr, routerAddress]) => {
-    const chainId = parseInt(chainIdStr);
+    const chainId: ChainId = parseInt(chainIdStr);
     universalRouterByChainId.set(chainId, new UniversalRouter(chainId, routerAddress));
 });

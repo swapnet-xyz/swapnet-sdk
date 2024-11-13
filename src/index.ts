@@ -1,4 +1,5 @@
 
+export * from './common/typeUtils.js'
 export * from './common/unames.js'
 export * from './common/liquiditySourceFacts.js'
 export * from './common/liquiditySourceSupports.js'
