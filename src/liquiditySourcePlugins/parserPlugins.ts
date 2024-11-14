@@ -2,14 +2,14 @@
 import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type LiquidityInfo, type PartialRecord } from "../index.js";
 
 
-const converWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
+const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
     return {
         source: route.name,
         address: route.address,
     };
 };
 
-const converWithFee = (route: IRouteInfoInResponse): LiquidityInfo => {
+const convertWithFee = (route: IRouteInfoInResponse): LiquidityInfo => {
     if (route.details === undefined || (route.details as IUniswapV3Details).fee === undefined) {
         throw new Error(`Invalid Uniswap V3 route details!`);
     }
@@ -23,38 +23,49 @@ const converWithFee = (route: IRouteInfoInResponse): LiquidityInfo => {
     };
 };
 
+const notSupported = (route: IRouteInfoInResponse): LiquidityInfo => {
+    throw new Error(`Liquidity source ${route.name} is not supported in parser!`);
+};
+
+const invalidRoute = (route: IRouteInfoInResponse): LiquidityInfo => {
+    throw new Error(`Liquidity source ${route.name} is invalid in routing plan!`);
+};
+
 export interface ILiquiditySourceParserPlugin {
     converToLiquidityInfo: (route: IRouteInfoInResponse) => LiquidityInfo;
 };
 
 
-export const parserPluginByLiquiditySourceUname: PartialRecord<LiquiditySourceUname, ILiquiditySourceParserPlugin> = {
+export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, ILiquiditySourceParserPlugin> = {
     [LiquiditySourceUname.UniswapV2]: {
-        converToLiquidityInfo: converWithoutDetails,
+        converToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.ThrusterV2_3k]: {
-        converToLiquidityInfo: converWithoutDetails,
+        converToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.ThrusterV2_10k]: {
-        converToLiquidityInfo: converWithoutDetails,
+        converToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.RingswapV2]: {
-        converToLiquidityInfo: converWithoutDetails,
+        converToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.UniswapV3]: {
-        converToLiquidityInfo: converWithFee,
+        converToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.PancakeswapV3]: {
-        converToLiquidityInfo: converWithFee,
+        converToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.ThrusterV3]: {
-        converToLiquidityInfo: converWithFee,
+        converToLiquidityInfo: convertWithFee,
     },
     // [LiquiditySourceUname.RingswapV3]: {
     //     converToLiquidityInfo: converWithFee,
     // },
+    [LiquiditySourceUname.Cetus]: {
+        converToLiquidityInfo: convertWithFee,
+    },
     [LiquiditySourceUname.CurveV1]: {
-        converToLiquidityInfo: converWithoutDetails,
+        converToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.BebopLimitOrder]: {
         converToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -84,5 +95,26 @@ export const parserPluginByLiquiditySourceUname: PartialRecord<LiquiditySourceUn
                 signature: details.signature,
             };
         },
+    },
+    [LiquiditySourceUname.NativeOrderbook]: {
+        converToLiquidityInfo: invalidRoute,
+    },
+    [LiquiditySourceUname.BebopOrderbook]: {
+        converToLiquidityInfo: invalidRoute,
+    },
+    [LiquiditySourceUname.Clipper]: {
+        converToLiquidityInfo: notSupported,
+    },
+    [LiquiditySourceUname.SushiswapV2]: {
+        converToLiquidityInfo: notSupported,
+    },
+    [LiquiditySourceUname.SushiswapV3]: {
+        converToLiquidityInfo: notSupported,
+    },
+    [LiquiditySourceUname.Aerodrome]: {
+        converToLiquidityInfo: notSupported,
+    },
+    [LiquiditySourceUname.Blasterswap]: {
+        converToLiquidityInfo: notSupported,
     },
 };
