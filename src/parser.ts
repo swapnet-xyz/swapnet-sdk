@@ -1,77 +1,25 @@
+
 import Graph from "graph-data-structure";
-import { type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type ISwapResponse, type IUniswapV3Details, } from "./common/interfaces.js";
+
+import { type IRouteInfoInResponse, type ISwapResponse, } from "./common/interfaces.js";
 import { type Swap, type TokenOperation, type IRoutingPlan, type LiquidityInfo, } from "./common/routingPlan.js";
-import { LiquiditySourceUname } from "./common/unames.js";
+import { parserPluginByLiquiditySourceUname } from "./liquiditySourcePlugins/parserPlugins.js";
+
 
 const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): Swap => {
     
+    const plugin = parserPluginByLiquiditySourceUname[route.name];
+
     let liquidityInfo: LiquidityInfo;
-    if (
-        route.name === LiquiditySourceUname.UniswapV2 ||
-        route.name === LiquiditySourceUname.ThrusterV2_3k ||
-        route.name === LiquiditySourceUname.ThrusterV2_10k ||
-        route.name === LiquiditySourceUname.RingswapV2
-
-    ) {
-        liquidityInfo = {
-            source: route.name,
-            address: route.address,
-        }
-    }
-    else if (
-        route.name === LiquiditySourceUname.UniswapV3 ||
-        route.name === LiquiditySourceUname.PancakeswapV3 ||
-        route.name === LiquiditySourceUname.ThrusterV3
-    ) {
-        if (route.details === undefined || (route.details as IUniswapV3Details).fee === undefined) {
-            throw new Error(`Invalid Uniswap V3 route details!`);
-        }
-
-        let fee: bigint = BigInt((route.details as IUniswapV3Details).fee);
-
-        liquidityInfo = {
-            source: route.name,
-            address: route.address,
-            fee,
-        }
-    }
-    else if (route.name === LiquiditySourceUname.CurveV1) {
-        liquidityInfo = {
-            source: route.name,
-            address: route.address,
-        }
-    }
-    else if (route.name === LiquiditySourceUname.BebopLimitOrder) {
-        const details = route.details as IBebopLimitOrderDetails;
-        liquidityInfo = {
-            source: route.name,
-            address: route.address,
-            isSingleOrder: details.isSingleOrder,
-            calldata: details.calldata,
-            partialFillOffset: details.partialFillOffset,
-        };
-    }
-    else if (route.name === LiquiditySourceUname.NativeLimitOrder) {
-        const details = route.details as ISwapnetLimitOrderDetails;
-        liquidityInfo = {
-            source: route.name,
-            address: details.maker,
-            maker: details.maker,
-            makerToken: details.makerToken,
-            takerToken: details.takerToken,
-            makerAmount: BigInt(details.makerAmount),
-            takerAmount: BigInt(details.takerAmount),
-            nonce: BigInt(details.nonce),
-            deadline: BigInt(details.deadline),
-            signature: details.signature,
-        };
-    }
-    else {
+    if (plugin === undefined) {
         liquidityInfo = {
             source: route.name,
             address: route.address,
         }
         // throw new Error(`Invalid route name ${route.name}!`);
+    }
+    else {
+        liquidityInfo = plugin.converToLiquidityInfo(route);
     }
 
     const fromTokenOp = tokenOpsById.get(route.fromTokens[0].referenceId);
@@ -89,7 +37,7 @@ const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOper
         amountIn: BigInt(route.fromTokens[0].amount),
         amountOut: BigInt(route.toTokens[0].amount),
         liquidityInfo,
-    }
+    };
 }
 
 export const parse = (swapResponse: ISwapResponse): IRoutingPlan => {
