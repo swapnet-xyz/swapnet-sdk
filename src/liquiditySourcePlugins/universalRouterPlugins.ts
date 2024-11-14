@@ -1,12 +1,11 @@
 
 import { solidityPacked } from "ethers";
 
-import type { LiquidityInfo, UniswapV3Info } from "../../common/routingPlan.js";
-import type { PartialRecord } from "../../common/typeUtils.js";
-import { LiquiditySourceUname } from "../../common/unames.js";
-
-import { CommandType, ROUTER_AS_RECIPIENT, UniswapV2ForkNames, UniswapV3ForkNames, type RoutePlanner } from "./routerCommands.js";
-import { getFewWrappedTokenAddress } from "./fewTokenHelper.js";
+import type { LiquidityInfo, UniswapV3Info } from "../common/routingPlan.js";
+import type { PartialRecord } from "../common/typeUtils.js";
+import { LiquiditySourceUname } from "../common/unames.js";
+import { CommandType, ROUTER_AS_RECIPIENT, UniswapV2ForkNames, UniswapV3ForkNames, type RoutePlanner } from "../routers/universalRouter/routerCommands.js";
+import { getFewWrappedTokenAddress } from "../routers/universalRouter/fewTokenHelper.js";
 
 
 const buildForUniswapV2Like = (v2ForkName: UniswapV2ForkNames): (

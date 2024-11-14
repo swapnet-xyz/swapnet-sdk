@@ -11,7 +11,7 @@ import type { IEncodeOptions } from '../types.js';
 
 import { deployedAddressesByChainId } from './addresses.js';
 import { CommandType, CONTRACT_BALANCE, RoutePlanner, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT, type IPermitWithSignature } from './routerCommands.js';
-import { universalRouterPluginByLiquiditySourceUname } from './liquiditySourcePlugins.js';
+import { universalRouterPluginByLiquiditySourceUname } from '../../liquiditySourcePlugins/universalRouterPlugins.js';
 
 
 const universalRouterInterface: Interface = new Interface(universalRouterData.abi);
