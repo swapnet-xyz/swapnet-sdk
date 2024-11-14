@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type LiquidityInfo, type PartialRecord } from "../../sdk/index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type LiquidityInfo, type PartialRecord } from "../index.js";
 
 
 const converWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
