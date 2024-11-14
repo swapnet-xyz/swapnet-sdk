@@ -192,3 +192,7 @@ export interface IPermitWithSignature {
   },
   signature: string,
 }
+
+export const CONTRACT_BALANCE = 2n ** 255n;
+export const SENDER_AS_RECIPIENT = '0x0000000000000000000000000000000000000001';
+export const ROUTER_AS_RECIPIENT = '0x0000000000000000000000000000000000000002';
