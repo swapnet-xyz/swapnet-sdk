@@ -13,7 +13,7 @@ const liquiditySourceFactByUname: { [liquiditySource in LiquiditySourceUname]: L
     // https://docs.uniswap.org/contracts/v2/reference/smart-contracts/v2-deployments
     [LiquiditySourceUname.UniswapV2]: {
         default: {
-            fee: 0.003,
+            poolFeeRate: 0.003,
         },
         overrideByChain: {
             [ChainId.EthereumMainnet]: {
