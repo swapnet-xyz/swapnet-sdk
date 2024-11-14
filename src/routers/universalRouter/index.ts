@@ -17,7 +17,7 @@ import { universalRouterPluginByLiquiditySourceUname } from '../../liquiditySour
 const universalRouterInterface: Interface = new Interface(universalRouterData.abi);
 
 export class UniversalRouter extends RouterBase {
-    public constructor(_chainId: number, _routerAddress: string, _tokenProxyAddress: string = PERMIT2_ADDRESS) {
+    public constructor(_chainId: ChainId, _routerAddress: string, _tokenProxyAddress: string = PERMIT2_ADDRESS) {
         super(universalRouterUname, _chainId, _routerAddress, _tokenProxyAddress);
     }
 
@@ -118,7 +118,7 @@ export class UniversalRouter extends RouterBase {
 
 export const universalRouterByChainId: Map<ChainId, UniversalRouter> = new Map();
 
-Object.entries(deployedAddressesByChainId).map(([chainIdStr, routerAddress]) => {
-    const chainId: ChainId = parseInt(chainIdStr);
+Object.entries(deployedAddressesByChainId).map(([chainIdString, routerAddress]) => {
+    const chainId = chainIdString as ChainId;
     universalRouterByChainId.set(chainId, new UniversalRouter(chainId, routerAddress));
 });

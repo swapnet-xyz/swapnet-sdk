@@ -1,11 +1,11 @@
 
 
 export enum ChainId {
-    EthereumMainnet = 1,
-    ArbitrumOne = 42161,
-    BaseMainnet = 8453,
-    BlastMainnet = 81457,
-    SuiMainnet = 101,
+    EthereumMainnet = "1",
+    ArbitrumOne = "42161",
+    BaseMainnet = "8453",
+    BlastMainnet = "81457",
+    SuiMainnet = "101",
 };
 
 export enum LiquiditySourceUname {
