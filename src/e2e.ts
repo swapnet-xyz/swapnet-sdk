@@ -5,7 +5,7 @@ import { Wallet, Contract } from "ethers";
 import erc20Abi from './abi/erc20.json' assert { type: "json" };
 // @ts-ignore
 import permit2Abi from './abi/permit2.json' assert { type: "json" };
-import { parse, SwapnetClient, type IEncodeOptions, universalRouterByChainId, PERMIT2_ADDRESS, ChainId } from "./index.js";
+import { parse, SwapnetClient, type IEncodeOptions, universalRouterByChainId, PERMIT2_ADDRESS, type ChainIdType } from "./index.js";
 
 const approveAsync = async (
     sellTokenAddress: string,
@@ -28,7 +28,7 @@ const approveAsync = async (
 };
 
 export const tradeE2eAsync = async (
-    chainId: ChainId,
+    chainId: ChainIdType,
     sellTokenAddress: string,
     buyTokenAddress: string,
     sellAmount: bigint,

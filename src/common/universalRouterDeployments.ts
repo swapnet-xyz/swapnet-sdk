@@ -1,5 +1,5 @@
 
-import { ChainId, LiquiditySourceUname } from "./unames.js";
+import { type ChainIdType, LiquiditySourceUname } from "./unames.js";
 
 const notDeployed: LiquiditySourceUname [] = [];
 const revision1: LiquiditySourceUname [] = [
@@ -11,10 +11,10 @@ const revision1: LiquiditySourceUname [] = [
     LiquiditySourceUname.RingswapV2,
 ];
 
-export const universalRouterDeploymentByChainId: Record<ChainId, LiquiditySourceUname []> = {
-    [ChainId.EthereumMainnet]: revision1,
-    [ChainId.ArbitrumOne]: revision1,
-    [ChainId.BaseMainnet]: revision1,
-    [ChainId.BlastMainnet]: revision1,
-    [ChainId.SuiMainnet]: notDeployed,
+export const universalRouterDeploymentByChainId: Record<ChainIdType, LiquiditySourceUname []> = {
+    1: revision1,
+    42161: revision1,
+    8453: revision1,
+    81457: revision1,
+    101: notDeployed,
 };
