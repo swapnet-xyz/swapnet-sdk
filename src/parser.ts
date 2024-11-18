@@ -9,18 +9,11 @@ import { parserPluginByLiquiditySourceUname } from "./liquiditySourcePlugins/par
 const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): Swap => {
     
     const plugin = parserPluginByLiquiditySourceUname[route.name];
-
-    let liquidityInfo: LiquidityInfo;
     if (plugin === undefined) {
-        liquidityInfo = {
-            source: route.name,
-            address: route.address,
-        }
-        // throw new Error(`Invalid route name ${route.name}!`);
+        throw new Error(`Invalid liquidity source ${route.name}!`);
     }
-    else {
-        liquidityInfo = plugin.converToLiquidityInfo(route);
-    }
+
+    const liquidityInfo: LiquidityInfo = plugin.converToLiquidityInfo(route);
 
     const fromTokenOp = tokenOpsById.get(route.fromTokens[0].referenceId);
     if (fromTokenOp === undefined) {

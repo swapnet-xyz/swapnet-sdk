@@ -12,6 +12,7 @@ import type { IEncodeOptions } from '../types.js';
 import { deployedAddressesByChainId } from './addresses.js';
 import { CommandType, CONTRACT_BALANCE, RoutePlanner, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT, type IPermitWithSignature } from './routerCommands.js';
 import { universalRouterPluginByLiquiditySourceUname } from '../../liquiditySourcePlugins/universalRouterPlugins.js';
+import type { PartialRecord } from '../../common/typeUtils.js';
 
 
 const universalRouterInterface: Interface = new Interface(universalRouterData.abi);
@@ -116,9 +117,8 @@ export class UniversalRouter extends RouterBase {
     }
 }
 
-export const universalRouterByChainId: Map<ChainId, UniversalRouter> = new Map();
-
+export const universalRouterByChainId: PartialRecord<ChainId, UniversalRouter> = {};
 Object.entries(deployedAddressesByChainId).map(([chainIdStr, routerAddress]) => {
     const chainId = parseInt(chainIdStr) as ChainId;
-    universalRouterByChainId.set(chainId, new UniversalRouter(chainId, routerAddress));
+    Object.assign(universalRouterByChainId, { [chainId]: new UniversalRouter(chainId, routerAddress)});
 });

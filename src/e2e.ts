@@ -63,7 +63,7 @@ export const tradeE2eAsync = async (
         const routingPlan = parse(res.swapResponse);
 
         // get router object by chainId
-        const router = universalRouterByChainId.get(chainId);
+        const router = universalRouterByChainId[chainId];
         if (router === undefined) {
             throw new Error(`Router for chainId ${chainId} not found.`);
         }
