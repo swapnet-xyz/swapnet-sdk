@@ -1,4 +1,4 @@
-import type { ChainIdType, LiquiditySourceUname } from "./unames.js";
+import type { ChainId, LiquiditySourceUname } from "./unames.js";
 
 export interface ITokenAmountInfo {
     referenceId: number;
@@ -72,7 +72,7 @@ export interface ITokenStaticInfo {
 }
 
 export interface ITokenPrice {
-    chainId: ChainIdType;
+    chainId: ChainId;
     address: string;
     usdPrice: number;
 }

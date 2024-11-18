@@ -4,7 +4,7 @@ import { Interface } from 'ethers';
 // @ts-ignore
 import universalRouterData from '../../abi/universalRouter.json' assert { type: "json" };
 import { type IRoutingPlan } from '../../common/routingPlan.js';
-import { universalRouterUname, type ChainIdType } from '../../common/unames.js';
+import { universalRouterUname, type ChainId } from '../../common/unames.js';
 import { PERMIT2_ADDRESS } from '../../ethers-override/permit2AsIf.js';
 import { RouterBase, resolveEncodeOptions } from '../routerBase.js';
 import type { IEncodeOptions } from '../types.js';
@@ -17,7 +17,7 @@ import { universalRouterPluginByLiquiditySourceUname } from '../../liquiditySour
 const universalRouterInterface: Interface = new Interface(universalRouterData.abi);
 
 export class UniversalRouter extends RouterBase {
-    public constructor(_chainId: ChainIdType, _routerAddress: string, _tokenProxyAddress: string = PERMIT2_ADDRESS) {
+    public constructor(_chainId: ChainId, _routerAddress: string, _tokenProxyAddress: string = PERMIT2_ADDRESS) {
         super(universalRouterUname, _chainId, _routerAddress, _tokenProxyAddress);
     }
 
@@ -116,9 +116,9 @@ export class UniversalRouter extends RouterBase {
     }
 }
 
-export const universalRouterByChainId: Map<ChainIdType, UniversalRouter> = new Map();
+export const universalRouterByChainId: Map<ChainId, UniversalRouter> = new Map();
 
 Object.entries(deployedAddressesByChainId).map(([chainIdStr, routerAddress]) => {
-    const chainId = parseInt(chainIdStr) as ChainIdType;
+    const chainId = parseInt(chainIdStr) as ChainId;
     universalRouterByChainId.set(chainId, new UniversalRouter(chainId, routerAddress));
 });

@@ -1,15 +1,16 @@
 
-export type ChainIdType = 1 | 42161 | 8453 | 81457 | 101;
 
-export const ChainId: { [key: string]: ChainIdType } = {
+export const ChainId = {
     EthereumMainnet: 1,
     ArbitrumOne: 42161,
     BaseMainnet: 8453,
     BlastMainnet: 81457,
     SuiMainnet: 101,
-};
+} as const;
 
-export const ChainIds = Object.values(ChainId);
+export type ChainId = typeof ChainId[keyof typeof ChainId];
+
+export const availableChainIds = Object.values(ChainId);
 
 export enum LiquiditySourceUname {
     UniswapV2 = "UniswapV2",
