@@ -1,6 +1,7 @@
+import type { LiquiditySourceUname } from "./unames.js";
 
 export interface LiquidityInfoBase {
-    protocol: string;
+    source: LiquiditySourceUname;
     address: string;
 };
 
@@ -20,6 +21,7 @@ export interface UniswapV3Info extends LiquidityInfoBase {
 };
 
 export interface BebopLimitOrderInfo extends LiquidityInfoBase {
+    isSingleOrder: boolean;
     calldata: string;
     partialFillOffset: number;
 };

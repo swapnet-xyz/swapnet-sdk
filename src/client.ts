@@ -1,4 +1,5 @@
 import type { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "./common/interfaces.js";
+import type { ChainId } from "./common/unames.js";
 
 const resolveErrorAsync = async (response: Response): Promise<{ succeeded: boolean; error: string; }> => {
     
@@ -40,7 +41,7 @@ export class SwapnetClient {
     ) {}
 
     public async getSupportedTokensAsync(
-        chainId: number,
+        chainId: ChainId,
     ): Promise<{
         succeeded: true,
         tokens: ITokenStaticInfo[],
@@ -71,7 +72,7 @@ export class SwapnetClient {
     }
 
     public async swapAsync(
-        chainId: number,
+        chainId: ChainId,
         sellTokenAddress: string,
         buyTokenAddress: string,
         sellAmount: bigint | undefined,
@@ -121,7 +122,7 @@ export class SwapnetClient {
     }
 
     public async getTokenPricesAsync(
-        chainId: number,
+        chainId: ChainId,
         tokens: string [],
     ): Promise<{
         succeeded: true,

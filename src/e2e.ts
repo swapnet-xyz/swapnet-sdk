@@ -5,7 +5,7 @@ import { Wallet, Contract } from "ethers";
 import erc20Abi from './abi/erc20.json' assert { type: "json" };
 // @ts-ignore
 import permit2Abi from './abi/permit2.json' assert { type: "json" };
-import { parse, SwapnetClient, type IEncodeOptions, universalRouterByChainId, PERMIT2_ADDRESS } from "./index.js";
+import { parse, SwapnetClient, type IEncodeOptions, universalRouterByChainId, PERMIT2_ADDRESS, type ChainId } from "./index.js";
 
 const approveAsync = async (
     sellTokenAddress: string,
@@ -28,7 +28,7 @@ const approveAsync = async (
 };
 
 export const tradeE2eAsync = async (
-    chainId: number,
+    chainId: ChainId,
     sellTokenAddress: string,
     buyTokenAddress: string,
     sellAmount: bigint,
@@ -63,7 +63,7 @@ export const tradeE2eAsync = async (
         const routingPlan = parse(res.swapResponse);
 
         // get router object by chainId
-        const router = universalRouterByChainId.get(chainId);
+        const router = universalRouterByChainId[chainId];
         if (router === undefined) {
             throw new Error(`Router for chainId ${chainId} not found.`);
         }
@@ -78,7 +78,7 @@ export const tradeE2eAsync = async (
 
         // build & send swap transaction
         const unsignedTx = await senderWallet.populateTransaction({
-            chainId: chainId,
+            chainId,
             to: router.routerAddress,
             data: calldata,
             maxFeePerGas,

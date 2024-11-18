@@ -1,79 +1,19 @@
+
 import Graph from "graph-data-structure";
-import { type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type ISwapResponse, type IUniswapV3Details, } from "./common/interfaces.js";
+
+import { type IRouteInfoInResponse, type ISwapResponse, } from "./common/interfaces.js";
 import { type Swap, type TokenOperation, type IRoutingPlan, type LiquidityInfo, } from "./common/routingPlan.js";
+import { parserPluginByLiquiditySourceUname } from "./liquiditySourcePlugins/parserPlugins.js";
+
 
 const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): Swap => {
     
-    let liquidityInfo: LiquidityInfo;
-    if (
-        route.name.startsWith('UniswapV2') ||
-        route.name.startsWith('ThrusterV2-3k') ||
-        route.name.startsWith('ThrusterV2-10k') ||
-        route.name.startsWith('RingswapV2')
+    const plugin = parserPluginByLiquiditySourceUname[route.name];
+    if (plugin === undefined) {
+        throw new Error(`Invalid liquidity source ${route.name}!`);
+    }
 
-    ) {
-        liquidityInfo = {
-            protocol: route.name,
-            address: route.address,
-        }
-    }
-    else if (
-        route.name.startsWith('UniswapV3') ||
-        route.name.startsWith('PancakeswapV3') ||
-        route.name.startsWith('ThrusterV3') ||
-        route.name.startsWith('RingswapV3')
-    ) {
-        if (route.details === undefined || (route.details as IUniswapV3Details).fee === undefined) {
-            throw new Error(`Invalid Uniswap V3 route details!`);
-        }
-
-        let fee: bigint = BigInt((route.details as IUniswapV3Details).fee);
-
-        liquidityInfo = {
-            protocol: route.name,
-            address: route.address,
-            fee,
-        }
-    }
-    else if (route.name.startsWith('CurveV1')) {
-        liquidityInfo = {
-            protocol: route.name,
-            address: route.address,
-        }
-    }
-    else if (route.name.startsWith('LimitOrder')) {
-        if (route.name === 'LimitOrder-Bebop') {
-            const details = route.details as IBebopLimitOrderDetails;
-            liquidityInfo = {
-                protocol: details.isSingleOrder ? "BebopSingle" : "BebopAggregate",
-                address: route.address,
-                calldata: details.calldata,
-                partialFillOffset: details.partialFillOffset,
-            };
-        }
-        else {
-            const details = route.details as ISwapnetLimitOrderDetails;
-            liquidityInfo = {
-                protocol: "LimitOrder",
-                address: details.maker,
-                maker: details.maker,
-                makerToken: details.makerToken,
-                takerToken: details.takerToken,
-                makerAmount: BigInt(details.makerAmount),
-                takerAmount: BigInt(details.takerAmount),
-                nonce: BigInt(details.nonce),
-                deadline: BigInt(details.deadline),
-                signature: details.signature,
-            };
-        }
-    }
-    else {
-        liquidityInfo = {
-            protocol: route.name,
-            address: route.address,
-        }
-        // throw new Error(`Invalid route name ${route.name}!`);
-    }
+    const liquidityInfo: LiquidityInfo = plugin.converToLiquidityInfo(route);
 
     const fromTokenOp = tokenOpsById.get(route.fromTokens[0].referenceId);
     if (fromTokenOp === undefined) {
@@ -90,7 +30,7 @@ const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOper
         amountIn: BigInt(route.fromTokens[0].amount),
         amountOut: BigInt(route.toTokens[0].amount),
         liquidityInfo,
-    }
+    };
 }
 
 export const parse = (swapResponse: ISwapResponse): IRoutingPlan => {
@@ -181,7 +121,7 @@ export const printRoutingPlan = (routingPlan: IRoutingPlan): void => {
     });
 
     swaps.forEach((swap, i) => {
-        console.log(`  ${i}: ${swap.liquidityInfo.protocol} ${swap.liquidityInfo.address}, fromTokenOp: ${tokenOpToIndex.get(swap.fromTokenOp)} ${swap.amountIn},  toTokenOp: ${tokenOpToIndex.get(swap.toTokenOp)} ${swap.amountOut}`);
+        console.log(`  ${i}: ${swap.liquidityInfo.source} ${swap.liquidityInfo.address}, fromTokenOp: ${tokenOpToIndex.get(swap.fromTokenOp)} ${swap.amountIn},  toTokenOp: ${tokenOpToIndex.get(swap.toTokenOp)} ${swap.amountOut}`);
     });
 
 };

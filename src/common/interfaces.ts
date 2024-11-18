@@ -1,3 +1,4 @@
+import type { ChainId, LiquiditySourceUname } from "./unames.js";
 
 export interface ITokenAmountInfo {
     referenceId: number;
@@ -42,7 +43,7 @@ export type IEncodingDetails = IUniswapV3Details | ILimitOrderDetailsBase;
 
 export interface IRouteInfoInResponse {
     address: string;
-    name: string;
+    name: LiquiditySourceUname;
     details?: IEncodingDetails;
     fromTokens: Array<ITokenAmountInfo>;
     toTokens: Array<ITokenAmountInfo>;
@@ -71,7 +72,7 @@ export interface ITokenStaticInfo {
 }
 
 export interface ITokenPrice {
-    chainId: number;
+    chainId: ChainId;
     address: string;
     usdPrice: number;
 }
