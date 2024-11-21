@@ -8,7 +8,16 @@ export const ChainId = {
     SuiMainnet: 101,
 } as const;
 
-export type ChainId = typeof ChainId[keyof typeof ChainId];
+export type ChainName = keyof typeof ChainId;
+export type ChainId = typeof ChainId[ChainName];
+
+export const getChainName = (chainId: ChainId): ChainName => {
+    const chainNames = Object.keys(ChainId).find(key => { return ChainId[key as ChainName] === chainId; });
+    if (chainNames === undefined) {
+        throw new Error(`Cannot find chainName for chainId ${chainId}!`);
+    }
+    return chainNames as ChainName;
+};
 
 export const availableChainIds = Object.values(ChainId);
 
