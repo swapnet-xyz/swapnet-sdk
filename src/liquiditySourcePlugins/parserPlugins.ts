@@ -111,7 +111,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.SushiswapV3]: {
         converToLiquidityInfo: notSupported,
     },
-    [LiquiditySourceUname.Aerodrome]: {
+    [LiquiditySourceUname.AerodromeV2]: {
         converToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.Blasterswap]: {
