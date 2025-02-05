@@ -32,43 +32,43 @@ const invalidRoute = (route: IRouteInfoInResponse): LiquidityInfo => {
 };
 
 export interface ILiquiditySourceParserPlugin {
-    converToLiquidityInfo: (route: IRouteInfoInResponse) => LiquidityInfo;
+    convertToLiquidityInfo: (route: IRouteInfoInResponse) => LiquidityInfo;
 };
 
 
 export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, ILiquiditySourceParserPlugin> = {
     [LiquiditySourceUname.UniswapV2]: {
-        converToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.ThrusterV2_3k]: {
-        converToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.ThrusterV2_10k]: {
-        converToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.RingswapV2]: {
-        converToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.UniswapV3]: {
-        converToLiquidityInfo: convertWithFee,
+        convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.PancakeswapV3]: {
-        converToLiquidityInfo: convertWithFee,
+        convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.ThrusterV3]: {
-        converToLiquidityInfo: convertWithFee,
+        convertToLiquidityInfo: convertWithFee,
     },
     // [LiquiditySourceUname.RingswapV3]: {
-    //     converToLiquidityInfo: converWithFee,
+    //     convertToLiquidityInfo: converWithFee,
     // },
     [LiquiditySourceUname.Cetus]: {
-        converToLiquidityInfo: convertWithFee,
+        convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.CurveV1]: {
-        converToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.BebopLimitOrder]: {
-        converToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
             const details = route.details as IBebopLimitOrderDetails;
             return {
                 source: route.name,
@@ -80,7 +80,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         },
     },
     [LiquiditySourceUname.NativeLimitOrder]: {
-        converToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
             const details = route.details as ISwapnetLimitOrderDetails;
             return {
                 source: route.name,
@@ -97,24 +97,24 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         },
     },
     [LiquiditySourceUname.NativeOrderbook]: {
-        converToLiquidityInfo: invalidRoute,
+        convertToLiquidityInfo: invalidRoute,
     },
     [LiquiditySourceUname.BebopOrderbook]: {
-        converToLiquidityInfo: invalidRoute,
+        convertToLiquidityInfo: invalidRoute,
     },
     [LiquiditySourceUname.Clipper]: {
-        converToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.SushiswapV2]: {
-        converToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.SushiswapV3]: {
-        converToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.AerodromeV2]: {
-        converToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.Blasterswap]: {
-        converToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: notSupported,
     },
 };

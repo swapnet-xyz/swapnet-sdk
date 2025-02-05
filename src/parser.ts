@@ -13,7 +13,7 @@ const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOper
         throw new Error(`Invalid liquidity source ${route.name}!`);
     }
 
-    const liquidityInfo: LiquidityInfo = plugin.converToLiquidityInfo(route);
+    const liquidityInfo: LiquidityInfo = plugin.convertToLiquidityInfo(route);
 
     const fromTokenOp = tokenOpsById.get(route.fromTokens[0].referenceId);
     if (fromTokenOp === undefined) {
