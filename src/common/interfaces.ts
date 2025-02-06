@@ -18,6 +18,10 @@ export interface IUniswapV3Details {
     fee: number;
 }
 
+export interface IAerodromeV2Details {
+    feeInBps: number;
+}
+
 export interface ILimitOrderDetailsBase {
     id: string;
     makerToken: string;
@@ -39,7 +43,7 @@ export interface IBebopLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
-export type IEncodingDetails = IUniswapV3Details | ILimitOrderDetailsBase;
+export type IEncodingDetails = IUniswapV3Details | IAerodromeV2Details | ILimitOrderDetailsBase;
 
 export interface IRouteInfoInResponse {
     address: string;

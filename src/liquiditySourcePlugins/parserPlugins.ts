@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type LiquidityInfo } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IAerodromeV2Details, type LiquidityInfo } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -112,7 +112,19 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.AerodromeV2]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            if (route.details === undefined || (route.details as IAerodromeV2Details).feeInBps === undefined) {
+                throw new Error(`Invalid Aerodrome V2 route details!`);
+            }
+        
+            const feeInBps: bigint = BigInt((route.details as IAerodromeV2Details).feeInBps);
+        
+            return {
+                source: route.name,
+                address: route.address,
+                feeInBps,
+            };
+        },
     },
     [LiquiditySourceUname.Blasterswap]: {
         convertToLiquidityInfo: notSupported,
