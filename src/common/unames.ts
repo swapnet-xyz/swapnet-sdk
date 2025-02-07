@@ -34,6 +34,7 @@ export enum LiquiditySourceUname {
     BebopOrderbook = "Orderbook-Bebop",
     BebopLimitOrder = "LimitOrder-Bebop",
     AerodromeV2 = "AerodromeV2",
+    AerodromeV3 = "AerodromeV3",
     ThrusterV2_3k = "ThrusterV2-3k",
     ThrusterV2_10k = "ThrusterV2-10k",
     ThrusterV3 = "ThrusterV3",

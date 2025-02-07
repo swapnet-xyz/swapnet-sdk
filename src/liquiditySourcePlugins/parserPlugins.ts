@@ -126,6 +126,14 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
             };
         },
     },
+    [LiquiditySourceUname.AerodromeV3]: {
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            return {
+                source: route.name,
+                address: route.address,
+            };
+        },
+    },
     [LiquiditySourceUname.Blasterswap]: {
         convertToLiquidityInfo: notSupported,
     },
