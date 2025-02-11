@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IAerodromeV2Details, type LiquidityInfo } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IAerodromeV2Details, type LiquidityInfo, type IAerodromeV3Details } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -128,9 +128,14 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     },
     [LiquiditySourceUname.AerodromeV3]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            if (route.details === undefined || (route.details as IAerodromeV3Details).tickSpacing === undefined) {
+                throw new Error(`Invalid Aerodrome V3 route details!`);
+            }
+            const tickSpacing: bigint = BigInt((route.details as IAerodromeV3Details).tickSpacing);
             return {
                 source: route.name,
                 address: route.address,
+                tickSpacing,
             };
         },
     },

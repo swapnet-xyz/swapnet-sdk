@@ -24,6 +24,10 @@ export interface AerodromeV2Info extends LiquidityInfoBase {
     feeInBps: bigint;
 };
 
+export interface AerodromeV3Info extends LiquidityInfoBase {
+    tickSpacing: bigint;
+};
+
 export interface BebopLimitOrderInfo extends LiquidityInfoBase {
     isSingleOrder: boolean;
     calldata: string;
@@ -40,6 +44,7 @@ export type LiquidityInfo = LiquidityInfoBase
     | LimitOrderInfo
     | UniswapV3Info
     | AerodromeV2Info
+    | AerodromeV3Info
     | BebopLimitOrderInfo;
 
 export interface Swap {

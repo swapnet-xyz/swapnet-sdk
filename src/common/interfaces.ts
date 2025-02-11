@@ -22,6 +22,10 @@ export interface IAerodromeV2Details {
     feeInBps: number;
 }
 
+export interface IAerodromeV3Details {
+    tickSpacing: number;
+}
+
 export interface ILimitOrderDetailsBase {
     id: string;
     makerToken: string;
@@ -43,7 +47,7 @@ export interface IBebopLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
-export type IEncodingDetails = IUniswapV3Details | IAerodromeV2Details | ILimitOrderDetailsBase;
+export type IEncodingDetails = IUniswapV3Details | IAerodromeV2Details | IAerodromeV3Details | ILimitOrderDetailsBase;
 
 export interface IRouteInfoInResponse {
     address: string;
