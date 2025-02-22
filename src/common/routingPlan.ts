@@ -20,7 +20,7 @@ export interface UniswapV3Info extends LiquidityInfoBase {
     fee: bigint;
 };
 
-export interface AerodromeV2Info extends LiquidityInfoBase {
+export interface UniswapV2Info extends LiquidityInfoBase {
     feeInBps: bigint;
 };
 
@@ -42,8 +42,8 @@ export interface BebopLimitOrderInfo extends LiquidityInfoBase {
 
 export type LiquidityInfo = LiquidityInfoBase
     | LimitOrderInfo
+    | UniswapV2Info
     | UniswapV3Info
-    | AerodromeV2Info
     | AerodromeV3Info
     | BebopLimitOrderInfo;
 

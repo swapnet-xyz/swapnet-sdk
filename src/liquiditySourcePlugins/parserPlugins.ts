@@ -1,11 +1,25 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IAerodromeV2Details, type LiquidityInfo, type IAerodromeV3Details } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
     return {
         source: route.name,
         address: route.address,
+    };
+};
+
+const convertWithFeeInBps = (route: IRouteInfoInResponse): LiquidityInfo => {
+    if (route.details === undefined || (route.details as IUniswapV2Details).feeInBps === undefined) {
+        throw new Error(`Invalid Uniswap V2 Like route details!`);
+    }
+
+    const feeInBps: bigint = BigInt((route.details as IUniswapV2Details).feeInBps);
+
+    return {
+        source: route.name,
+        address: route.address,
+        feeInBps,
     };
 };
 
@@ -38,7 +52,7 @@ export interface ILiquiditySourceParserPlugin {
 
 export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, ILiquiditySourceParserPlugin> = {
     [LiquiditySourceUname.UniswapV2]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.ThrusterV2_3k]: {
         convertToLiquidityInfo: convertWithoutDetails,
@@ -112,19 +126,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.AerodromeV2]: {
-        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
-            if (route.details === undefined || (route.details as IAerodromeV2Details).feeInBps === undefined) {
-                throw new Error(`Invalid Aerodrome V2 route details!`);
-            }
-        
-            const feeInBps: bigint = BigInt((route.details as IAerodromeV2Details).feeInBps);
-        
-            return {
-                source: route.name,
-                address: route.address,
-                feeInBps,
-            };
-        },
+        convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.AerodromeV3]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {

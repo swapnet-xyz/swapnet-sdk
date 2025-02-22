@@ -14,12 +14,12 @@ export interface ITokenInfoInResponse {
     usdPrice?: number;
 }
 
-export interface IUniswapV3Details {
-    fee: number;
+export interface IUniswapV2Details {
+    feeInBps: number;
 }
 
-export interface IAerodromeV2Details {
-    feeInBps: number;
+export interface IUniswapV3Details {
+    fee: number;
 }
 
 export interface IAerodromeV3Details {
@@ -47,7 +47,7 @@ export interface IBebopLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
-export type IEncodingDetails = IUniswapV3Details | IAerodromeV2Details | IAerodromeV3Details | ILimitOrderDetailsBase;
+export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IAerodromeV3Details | ILimitOrderDetailsBase;
 
 export interface IRouteInfoInResponse {
     address: string;
