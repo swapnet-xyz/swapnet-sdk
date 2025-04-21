@@ -66,6 +66,9 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.UniswapV3]: {
         convertToLiquidityInfo: convertWithFee,
     },
+    [LiquiditySourceUname.UniswapV4]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
     [LiquiditySourceUname.PancakeswapV3]: {
         convertToLiquidityInfo: convertWithFee,
     },

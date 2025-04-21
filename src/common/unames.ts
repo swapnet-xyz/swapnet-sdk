@@ -24,6 +24,7 @@ export const availableChainIds = Object.values(ChainId);
 export enum LiquiditySourceUname {
     UniswapV2 = "UniswapV2",
     UniswapV3 = "UniswapV3",
+    UniswapV4 = "UniswapV4",
     PancakeswapV3 = "PancakeswapV3",
     CurveV1 = "CurveV1",
     Clipper = "Clipper",
