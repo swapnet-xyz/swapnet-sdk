@@ -17,4 +17,5 @@ export const universalRouterDeploymentByChainId: Record<ChainId, LiquiditySource
     [ChainId.BaseMainnet]: revision1,
     [ChainId.BlastMainnet]: revision1,
     [ChainId.SuiMainnet]: notDeployed,
+    [ChainId.UnichainMainnet]: notDeployed,
 };
