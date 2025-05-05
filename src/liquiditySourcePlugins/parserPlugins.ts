@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -37,6 +37,29 @@ const convertWithFee = (route: IRouteInfoInResponse): LiquidityInfo => {
     };
 };
 
+const convertUniswapV4 = (route: IRouteInfoInResponse): LiquidityInfo => {
+    if (route.details === undefined) {
+        throw new Error(`Invalid Uniswap V4 route details!`);
+    }
+
+    const details = (route.details as IUniswapV4Details);
+
+    if (details.fee === undefined || details.tickSpacing === undefined || details.hooks === undefined) {
+        throw new Error(`Invalid Uniswap V4 route details!`);
+    }
+
+    const fee: bigint = BigInt(details.fee);
+    const tickSpacing: bigint = BigInt(details.tickSpacing);
+
+    return {
+        source: route.name,
+        address: route.address,
+        fee,
+        tickSpacing,
+        hooks: details.hooks,
+    };
+};
+
 const notSupported = (route: IRouteInfoInResponse): LiquidityInfo => {
     throw new Error(`Liquidity source ${route.name} is not supported in parser!`);
 };
@@ -67,7 +90,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.UniswapV4]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertUniswapV4,
     },
     [LiquiditySourceUname.PancakeswapV3]: {
         convertToLiquidityInfo: convertWithFee,
