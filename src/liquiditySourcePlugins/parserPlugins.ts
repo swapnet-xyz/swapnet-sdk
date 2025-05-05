@@ -57,6 +57,7 @@ const convertUniswapV4 = (route: IRouteInfoInResponse): LiquidityInfo => {
         fee,
         tickSpacing,
         hooks: details.hooks,
+        isToken0Native: details.isToken0Native,
     };
 };
 

@@ -26,6 +26,7 @@ export interface IUniswapV4Details {
     fee: number;
     tickSpacing: number;
     hooks: string;
+    isToken0Native: boolean;
 }
 
 export interface IAerodromeV3Details {
