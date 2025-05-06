@@ -23,7 +23,6 @@ export interface UniswapV3Info extends LiquidityInfoBase {
 export interface UniswapV4Info extends LiquidityInfoBase {
     fee: bigint;
     tickSpacing: bigint;
-    hooks: string;
     isToken0Native: boolean;
 };
 
