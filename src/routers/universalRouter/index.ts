@@ -124,8 +124,8 @@ export class UniversalRouter extends RouterBase {
                 ) {
                     let path = [ fromToken, toToken ];
                     if (liquidityInfo.protocol === "RingswapV2") {
-                        const fewWrappedFromToken = getFewWrappedTokenAddress(fromToken);
-                        const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
+                        const fewWrappedFromToken = getFewWrappedTokenAddress(this.chainId, fromToken);
+                        const fewWrappedToToken = getFewWrappedTokenAddress(this.chainId, toToken);
                         path = [ fewWrappedFromToken, fewWrappedToToken ];
 
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
@@ -146,7 +146,7 @@ export class UniversalRouter extends RouterBase {
                     ]);
 
                     if (liquidityInfo.protocol === "RingswapV2") {
-                        const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
+                        const fewWrappedToToken = getFewWrappedTokenAddress(this.chainId, toToken);
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fewWrappedToToken,
                             ROUTER_AS_RECIPIENT,
@@ -162,8 +162,8 @@ export class UniversalRouter extends RouterBase {
                 ) {
                     let path: string;
                     if (liquidityInfo.protocol === "RingswapV3") {
-                        const fewWrappedFromToken = getFewWrappedTokenAddress(fromToken);
-                        const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
+                        const fewWrappedFromToken = getFewWrappedTokenAddress(this.chainId, fromToken);
+                        const fewWrappedToToken = getFewWrappedTokenAddress(this.chainId, toToken);
                         path = encodeV3RouteToPath(fewWrappedFromToken, fewWrappedToToken, Number((liquidityInfo as UniswapV3Info).fee));
 
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
@@ -187,7 +187,7 @@ export class UniversalRouter extends RouterBase {
                     ]);
 
                     if (liquidityInfo.protocol === "RingswapV3") {
-                        const fewWrappedToToken = getFewWrappedTokenAddress(toToken);
+                        const fewWrappedToToken = getFewWrappedTokenAddress(this.chainId, toToken);
                         planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                             fewWrappedToToken,
                             ROUTER_AS_RECIPIENT,
