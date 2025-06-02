@@ -20,8 +20,8 @@ const buildForUniswapV2Like = (v2ForkName: UniswapV2ForkNames): (
     return function (fromTokenAddress, toTokenAddress, amountIn, liquidityInfo, planner) {
         let path = [ fromTokenAddress, toTokenAddress ];
         if (liquidityInfo.source === LiquiditySourceUname.RingswapV2) {
-            const fewWrappedFromToken = getFewWrappedTokenAddress(fromTokenAddress);
-            const fewWrappedToToken = getFewWrappedTokenAddress(toTokenAddress);
+            const fewWrappedFromToken = getFewWrappedTokenAddress(liquidityInfo.chainId, fromTokenAddress);
+            const fewWrappedToToken = getFewWrappedTokenAddress(liquidityInfo.chainId, toTokenAddress);
             path = [ fewWrappedFromToken, fewWrappedToToken ];
     
             planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
@@ -42,7 +42,7 @@ const buildForUniswapV2Like = (v2ForkName: UniswapV2ForkNames): (
         ]);
     
         if (liquidityInfo.source === LiquiditySourceUname.RingswapV2) {
-            const fewWrappedToToken = getFewWrappedTokenAddress(toTokenAddress);
+            const fewWrappedToToken = getFewWrappedTokenAddress(liquidityInfo.chainId, toTokenAddress);
             planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                 fewWrappedToToken,
                 ROUTER_AS_RECIPIENT,

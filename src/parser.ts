@@ -2,18 +2,19 @@
 import Graph from "graph-data-structure";
 
 import { type IRouteInfoInResponse, type ISwapResponse, } from "./common/interfaces.js";
+import { type ChainId } from "./common/unames.js";
 import { type Swap, type TokenOperation, type IRoutingPlan, type LiquidityInfo, } from "./common/routingPlan.js";
 import { parserPluginByLiquiditySourceUname } from "./liquiditySourcePlugins/parserPlugins.js";
 
 
-const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): Swap => {
+const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>, chainId: ChainId): Swap => {
     
     const plugin = parserPluginByLiquiditySourceUname[route.name];
     if (plugin === undefined) {
         throw new Error(`Invalid liquidity source ${route.name}!`);
     }
 
-    const liquidityInfo: LiquidityInfo = plugin.convertToLiquidityInfo(route);
+    const liquidityInfo: LiquidityInfo = plugin.convertToLiquidityInfo(route, chainId);
 
     const fromTokenOp = tokenOpsById.get(route.fromTokens[0].referenceId);
     if (fromTokenOp === undefined) {
@@ -60,7 +61,7 @@ export const parse = (swapResponse: ISwapResponse): IRoutingPlan => {
         if (!swapsByToTokenId.has(toTokenId)) {
             swapsByToTokenId.set(toTokenId, []);
         }
-        const swap: Swap = toSwap(route, tokenOpsById);
+        const swap: Swap = toSwap(route, tokenOpsById, swapResponse.chainId);
         swap.fromTokenOp.toSwaps.push(swap);
         swap.toTokenOp.fromSwaps.push(swap);
         swapsByToTokenId.get(toTokenId)!.push(swap);

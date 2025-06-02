@@ -17,22 +17,6 @@ export const FEW_WRAPPED_FACTORY_CONFIGS: Record<number, FewWrappedFactoryConfig
   }
 }
 
-// Default values for all other chains
-const DEFAULT_FEW_WRAP_FACTORY = "0x7D86394139bf1122E82FDF45Bb4e3b038A4464DD"
-const DEFAULT_FEW_WRAP_INIT_CODE_HASH = "0x2bdba5734ddf754fb149ef1faa937956c52cfd1f24d68163a95f42d08ec06d38"
-
-export const FEW_WRAPPED_TOKEN_FACTORY_ADDRESS = (chainId: number): string => {
-  if (chainId in FEW_WRAPPED_FACTORY_CONFIGS)
-    return FEW_WRAPPED_FACTORY_CONFIGS[chainId].fewWrapFactory
-  return DEFAULT_FEW_WRAP_FACTORY
-}
-
-export const FEW_WRAPPED_TOKEN_INIT_CODE_HASH = (chainId: number): string => {
-  if (chainId in FEW_WRAPPED_FACTORY_CONFIGS)
-    return FEW_WRAPPED_FACTORY_CONFIGS[chainId].fewWrapInitCodeHash
-  return DEFAULT_FEW_WRAP_INIT_CODE_HASH
-}
-
 export const getFewWrappedTokenAddress = (chainId: number, originalTokenAddress: string): string => {
     if (!(chainId in FEW_WRAPPED_FACTORY_CONFIGS)) {
       throw new Error(`Few factory info for chain with ID ${chainId} is not found!`);

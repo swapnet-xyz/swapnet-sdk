@@ -3,6 +3,7 @@ import type { LiquiditySourceUname } from "./unames.js";
 export interface LiquidityInfoBase {
     source: LiquiditySourceUname;
     address: string;
+    chainId: number;
 };
 
 export interface LimitOrderInfo extends LiquidityInfoBase {
