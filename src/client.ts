@@ -1,4 +1,4 @@
-import type { ISwapResponse, ITokenPrice, ITokenStaticInfo } from "./common/interfaces.js";
+import type { ISwapResponse, ITokenStaticInfo } from "./common/interfaces.js";
 import type { ChainId } from "./common/unames.js";
 
 const resolveErrorAsync = async (response: Response): Promise<{ succeeded: boolean; error: string; }> => {
