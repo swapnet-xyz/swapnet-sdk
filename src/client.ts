@@ -120,36 +120,4 @@ export class SwapnetClient {
             swapResponse,
         };
     }
-
-    public async getTokenPricesAsync(
-        chainId: ChainId,
-        tokens: string [],
-    ): Promise<{
-        succeeded: true,
-        tokenPrices: ITokenPrice [],
-    } | {
-        succeeded: false,
-        error: string,
-    }> {
-
-        const url = `${this._baseUrl}/api/${this._apiVersion}/prices?` +
-            `apiKey=${this._apiKey}&` +
-            `chainId=${chainId}&` +
-            `tokens=${tokens.join(',')}`;
-
-        const response = await fetch(url);
-        const { succeeded, error } = await resolveErrorAsync(response);
-        if (!succeeded) {
-            return {
-                succeeded: false,
-                error,
-            }
-        }
-
-        const tokenPrices = (await response.json()) as ITokenPrice [];
-        return {
-            succeeded: true,
-            tokenPrices,
-        }
-    }
 }
