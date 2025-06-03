@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -84,7 +84,15 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.RingswapV2]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            const { fromFewWrappedTokenAddress, toFewWrappedTokenAddress } = route.details as IRingswapV2Details;
+            return {
+                source: route.name,
+                address: route.address,
+                fromFewWrappedTokenAddress,
+                toFewWrappedTokenAddress,
+            } as RingswapV2Info;
+        },
     },
     [LiquiditySourceUname.UniswapV3]: {
         convertToLiquidityInfo: convertWithFee,

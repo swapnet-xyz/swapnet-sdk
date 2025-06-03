@@ -30,6 +30,11 @@ export interface UniswapV2Info extends LiquidityInfoBase {
     feeInBps: bigint;
 };
 
+export interface RingswapV2Info extends LiquidityInfoBase {
+    fromFewWrappedTokenAddress: string;
+    toFewWrappedTokenAddress: string;
+};
+
 export interface AerodromeV3Info extends LiquidityInfoBase {
     tickSpacing: bigint;
 };
@@ -52,6 +57,7 @@ export type LiquidityInfo = LiquidityInfoBase
     | UniswapV3Info
     | UniswapV4Info
     | AerodromeV3Info
+    | RingswapV2Info
     | BebopLimitOrderInfo;
 
 export interface Swap {

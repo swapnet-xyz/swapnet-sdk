@@ -1,11 +1,10 @@
 
 import { solidityPacked } from "ethers";
 
-import type { LiquidityInfo, UniswapV3Info } from "../common/routingPlan.js";
+import type { LiquidityInfo, RingswapV2Info, UniswapV3Info } from "../common/routingPlan.js";
 import type { PartialRecord } from "../common/typeUtils.js";
 import { LiquiditySourceUname } from "../common/unames.js";
 import { CommandType, ROUTER_AS_RECIPIENT, UniswapV2ForkNames, UniswapV3ForkNames, type RoutePlanner } from "../routers/universalRouter/routerCommands.js";
-import { getFewWrappedTokenAddress } from "../routers/universalRouter/fewTokenHelper.js";
 
 
 const buildForUniswapV2Like = (v2ForkName: UniswapV2ForkNames): (
@@ -20,9 +19,8 @@ const buildForUniswapV2Like = (v2ForkName: UniswapV2ForkNames): (
     return function (fromTokenAddress, toTokenAddress, amountIn, liquidityInfo, planner) {
         let path = [ fromTokenAddress, toTokenAddress ];
         if (liquidityInfo.source === LiquiditySourceUname.RingswapV2) {
-            const fewWrappedFromToken = getFewWrappedTokenAddress(fromTokenAddress);
-            const fewWrappedToToken = getFewWrappedTokenAddress(toTokenAddress);
-            path = [ fewWrappedFromToken, fewWrappedToToken ];
+            const { fromFewWrappedTokenAddress, toFewWrappedTokenAddress } = liquidityInfo as RingswapV2Info;
+            path = [ fromFewWrappedTokenAddress, toFewWrappedTokenAddress ];
     
             planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
                 fromTokenAddress,
@@ -42,9 +40,9 @@ const buildForUniswapV2Like = (v2ForkName: UniswapV2ForkNames): (
         ]);
     
         if (liquidityInfo.source === LiquiditySourceUname.RingswapV2) {
-            const fewWrappedToToken = getFewWrappedTokenAddress(toTokenAddress);
+            const { toFewWrappedTokenAddress } = liquidityInfo as RingswapV2Info;
             planner.addCommand(CommandType.WRAP_UNWRAP_FEW_TOKEN, [
-                fewWrappedToToken,
+                toFewWrappedTokenAddress,
                 ROUTER_AS_RECIPIENT,
                 0n, // minAmountOut
                 false,

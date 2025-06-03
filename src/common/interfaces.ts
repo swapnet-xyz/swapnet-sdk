@@ -18,6 +18,11 @@ export interface IUniswapV2Details {
     feeInBps: number;
 }
 
+export interface IRingswapV2Details extends IUniswapV2Details {
+    fromFewWrappedTokenAddress: string;
+    toFewWrappedTokenAddress: string;
+}
+
 export interface IUniswapV3Details {
     fee: number;
 }
@@ -54,7 +59,7 @@ export interface IBebopLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
-export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IUniswapV4Details | IAerodromeV3Details | ILimitOrderDetailsBase;
+export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IUniswapV4Details | IAerodromeV3Details | IRingswapV2Details | ILimitOrderDetailsBase;
 
 export interface IRouteInfoInResponse {
     address: string;
