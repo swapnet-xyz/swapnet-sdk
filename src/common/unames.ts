@@ -7,6 +7,7 @@ export const ChainId = {
     BlastMainnet: 81457,
     SuiMainnet: 101,
     UnichainMainnet: 130,
+    BscManinet: 56,
 } as const;
 
 export type ChainName = keyof typeof ChainId;
