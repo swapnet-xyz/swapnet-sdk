@@ -4,7 +4,6 @@ import { Interface } from 'ethers';
 // @ts-ignore
 import universalRouterData from '../../abi/universalRouter.json' assert { type: "json" };
 import { type IRoutingPlan } from '../../common/routingPlan.js';
-import { universalRouterUname, type ChainId } from '../../common/unames.js';
 import { PERMIT2_ADDRESS } from '../../ethers-override/permit2AsIf.js';
 import { RouterBase, resolveEncodeOptions } from '../routerBase.js';
 import type { IEncodeOptions } from '../types.js';
@@ -13,6 +12,7 @@ import { deployedAddressesByChainId } from './addresses.js';
 import { CommandType, CONTRACT_BALANCE, RoutePlanner, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT, type IPermitWithSignature } from './routerCommands.js';
 import { universalRouterPluginByLiquiditySourceUname } from '../../liquiditySourcePlugins/universalRouterPlugins.js';
 import type { PartialRecord } from '../../common/typeUtils.js';
+import { ChainId, SettlementContractUname } from '../../common/unames.js';
 
 
 const universalRouterInterface: Interface = new Interface(universalRouterData.abi);
@@ -112,7 +112,7 @@ export const encodeForUniversalRouter = (
 
 export class UniversalRouter extends RouterBase {
     public constructor(_chainId: ChainId, _routerAddress: string, _tokenProxyAddress: string = PERMIT2_ADDRESS) {
-        super(universalRouterUname, _chainId, _routerAddress, _tokenProxyAddress);
+        super(SettlementContractUname.Universal, _chainId, _routerAddress, _tokenProxyAddress);
     }
 
     public encode(

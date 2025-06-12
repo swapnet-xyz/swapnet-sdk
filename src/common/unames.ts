@@ -46,4 +46,14 @@ export enum LiquiditySourceUname {
     Cetus = "Cetus",
 };
 
-export const universalRouterUname: string = "universal router";
+export enum SettlementContractUname {
+    Default = "default settlement contract",
+    Native = "swapnet router",
+    Executor = "swapnet executor",
+    Universal = "universal router",
+    Clipper = "clipper router",
+    SuiRouter = "sui router",
+    OneInch = "1inch settlement contract",
+    ZeroEx = "0x settlement contract",
+    Paraswap = "paraswap settlement contract",
+};

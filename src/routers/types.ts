@@ -31,3 +31,8 @@ export interface IRouter extends IRouterInfo {
         options: IEncodeOptions,
     ) => string; 
 };
+
+export type SettlementContractFactType = {
+    address: string,
+    tokenProxy?: string,
+};
