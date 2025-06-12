@@ -4,15 +4,14 @@ import { Interface } from 'ethers';
 // @ts-ignore
 import universalRouterData from '../../abi/universalRouter.json' assert { type: "json" };
 import { type IRoutingPlan } from '../../common/routingPlan.js';
-import { PERMIT2_ADDRESS } from '../../ethers-override/permit2AsIf.js';
 import { RouterBase, resolveEncodeOptions } from '../routerBase.js';
 import type { IEncodeOptions } from '../types.js';
 
-import { deployedAddressesByChainId } from './addresses.js';
 import { CommandType, CONTRACT_BALANCE, RoutePlanner, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT, type IPermitWithSignature } from './routerCommands.js';
 import { universalRouterPluginByLiquiditySourceUname } from '../../liquiditySourcePlugins/universalRouterPlugins.js';
-import type { PartialRecord } from '../../common/typeUtils.js';
+import { getAvailableChainIds, getPerChainFact, type PartialRecord } from '../../common/typeUtils.js';
 import { ChainId, SettlementContractUname } from '../../common/unames.js';
+import { universalContractAllChainsFact } from './fact.js';
 
 
 const universalRouterInterface: Interface = new Interface(universalRouterData.abi);
@@ -111,8 +110,9 @@ export const encodeForUniversalRouter = (
 };
 
 export class UniversalRouter extends RouterBase {
-    public constructor(_chainId: ChainId, _routerAddress: string, _tokenProxyAddress: string = PERMIT2_ADDRESS) {
-        super(SettlementContractUname.Universal, _chainId, _routerAddress, _tokenProxyAddress);
+    public constructor(chainId: ChainId) {
+        const { address, tokenProxy, } = getPerChainFact(universalContractAllChainsFact, chainId);
+        super(SettlementContractUname.Universal, chainId, address, tokenProxy);
     }
 
     public encode(
@@ -127,7 +127,6 @@ export class UniversalRouter extends RouterBase {
 }
 
 export const universalRouterByChainId: PartialRecord<ChainId, UniversalRouter> = {};
-Object.entries(deployedAddressesByChainId).map(([chainIdStr, routerAddress]) => {
-    const chainId = parseInt(chainIdStr) as ChainId;
-    Object.assign(universalRouterByChainId, { [chainId]: new UniversalRouter(chainId, routerAddress)});
+getAvailableChainIds(universalContractAllChainsFact).forEach(chainId => {
+    Object.assign(universalRouterByChainId, { [chainId]: new UniversalRouter(chainId)});
 });

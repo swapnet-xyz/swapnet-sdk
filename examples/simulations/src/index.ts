@@ -15,11 +15,7 @@ const provider = new JsonRpcProvider(
     { staticNetwork: Network.from(network) },
 );
 
-const router = new UniversalRouter(
-    chainId,
-    "0x2C8754B44865002415dD5CEBa6Cd67258D1eCe2e",   // universal router (proxy) deployed address - by Ringswap
-    "0x000000000022d473030f116ddee9f6b43ac78ba3"    // permit2 deployed address - by Uniswap
-);
+const router = new UniversalRouter(chainId);
 
 const senderAddress: string = "0x3B2Be8413F34fc6491506B18c530A264c0f7adAE";     // user address - randomly chosen
 

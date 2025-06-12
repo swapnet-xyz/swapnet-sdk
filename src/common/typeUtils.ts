@@ -21,3 +21,7 @@ export const getPerChainFact = <TPerChainFact>(allChainsFact: AllChainsFact<TPer
         ...overrideByChain[chainId],
     } as TPerChainFact;
 };
+
+export const getAvailableChainIds = <TPerChainFact>(allChainsFact: AllChainsFact<TPerChainFact>): ChainId [] => {
+    return Object.keys(allChainsFact.overrideByChain).map(chainIdStr => parseInt(chainIdStr) as ChainId);
+};
