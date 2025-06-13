@@ -47,13 +47,13 @@ export enum LiquiditySourceUname {
 };
 
 export enum SettlementContractUname {
-    Default = "default settlement contract",
-    Native = "swapnet router",
-    Executor = "swapnet executor",
-    Universal = "universal router",
-    Clipper = "clipper router",
-    SuiRouter = "sui router",
-    OneInch = "1inch settlement contract",
-    ZeroEx = "0x settlement contract",
-    Paraswap = "paraswap settlement contract",
+    Default = "default-router",
+    Native = "swapnet-router",
+    Executor = "swapnet-executor",
+    Universal = "universal-router",
+    Clipper = "clipper-router",
+    SuiRouter = "sui-router",
+    OneInch = "1inch-router",
+    ZeroEx = "0x-router",
+    Paraswap = "paraswap-router",
 };
