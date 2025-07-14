@@ -59,3 +59,5 @@ export enum SettlementContractUname {
     ZeroEx = "0x-router",
     Paraswap = "paraswap-router",
 };
+
+export const availableSettlementContracts = Object.values(SettlementContractUname);
