@@ -48,7 +48,7 @@ export enum LiquiditySourceUname {
     Cetus = "Cetus",
 };
 
-export enum SettlementContractUname {
+export enum RouterUname {
     Default = "default-router",
     Native = "swapnet-router",
     Executor = "swapnet-executor",
@@ -60,4 +60,4 @@ export enum SettlementContractUname {
     Paraswap = "paraswap-router",
 };
 
-export const availableSettlementContracts = Object.values(SettlementContractUname);
+export const availableRouters = Object.values(RouterUname);

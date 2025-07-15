@@ -32,7 +32,7 @@ export interface IRouter extends IRouterInfo {
     ) => string; 
 };
 
-export type SettlementContractFactType = {
+export type RouterFactType = {
     address: string,
     tokenProxy?: string,
 };

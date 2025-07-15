@@ -71,7 +71,7 @@ export interface IRouteInfoInResponse {
 
 export interface ISwapResponse {
     aggregator: string;
-    settlementContract: string;
+    router: string;
     block?: number;
     nativeTokenUsdPrice?: number;
     tokens: Array<ITokenInfoInResponse>;

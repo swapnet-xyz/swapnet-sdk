@@ -1,9 +1,9 @@
 import type { AllChainsFact } from "../../common/typeUtils.js";
 import { ChainId } from "../../common/unames.js";
-import type { SettlementContractFactType } from "../types.js";
+import type { RouterFactType } from "../types.js";
 
 
-export const universalContractAllChainsFact: AllChainsFact<SettlementContractFactType> = {
+export const universalContractAllChainsFact: AllChainsFact<RouterFactType> = {
     default: {
         tokenProxy: "0x000000000022d473030f116ddee9f6b43ac78ba3",
     },

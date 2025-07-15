@@ -10,7 +10,7 @@ import type { IEncodeOptions } from '../types.js';
 import { CommandType, CONTRACT_BALANCE, RoutePlanner, ROUTER_AS_RECIPIENT, SENDER_AS_RECIPIENT, type IPermitWithSignature } from './routerCommands.js';
 import { universalRouterPluginByLiquiditySourceUname } from '../../liquiditySourcePlugins/universalRouterPlugins.js';
 import { getAvailableChainIds, getPerChainFact, type PartialRecord } from '../../common/typeUtils.js';
-import { ChainId, SettlementContractUname } from '../../common/unames.js';
+import { ChainId, RouterUname } from '../../common/unames.js';
 import { universalContractAllChainsFact } from './fact.js';
 
 
@@ -112,7 +112,7 @@ export const encodeForUniversalRouter = (
 export class UniversalRouter extends RouterBase {
     public constructor(chainId: ChainId) {
         const { address, tokenProxy, } = getPerChainFact(universalContractAllChainsFact, chainId);
-        super(SettlementContractUname.Universal, chainId, address, tokenProxy);
+        super(RouterUname.Universal, chainId, address, tokenProxy);
     }
 
     public encode(
