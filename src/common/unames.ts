@@ -10,6 +10,7 @@ export const ChainId = {
     BscManinet: 56,
     PolygonMainnet: 137,
     OpMainnet: 10,
+    Katana: 747474,
 } as const;
 
 export type ChainName = keyof typeof ChainId;
