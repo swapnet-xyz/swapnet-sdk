@@ -1,15 +1,15 @@
 
 
 export const ChainId = {
-    EthereumMainnet: 1,
+    Ethereum: 1,
     ArbitrumOne: 42161,
-    BaseMainnet: 8453,
-    BlastMainnet: 81457,
-    SuiMainnet: 101,
-    UnichainMainnet: 130,
-    BscManinet: 56,
-    PolygonMainnet: 137,
-    OpMainnet: 10,
+    Base: 8453,
+    Blast: 81457,
+    Sui: 101,
+    Unichain: 130,
+    Bsc: 56,
+    Polygon: 137,
+    Optimism: 10,
     Katana: 747474,
 } as const;
 
