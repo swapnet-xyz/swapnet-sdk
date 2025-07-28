@@ -1,5 +1,5 @@
 import type { ISwapResponse, ITokenStaticInfo } from "./common/interfaces.js";
-import type { ChainId } from "./common/unames.js";
+import { RouterUname, type ChainId } from "./common/unames.js";
 
 const resolveErrorAsync = async (response: Response): Promise<{ succeeded: boolean; error: string; }> => {
     
@@ -79,6 +79,7 @@ export class SwapnetClient {
         buyAmount: bigint | undefined,
         userAddress: string | undefined = undefined,
         includeRfq: boolean | undefined = undefined,
+        router: RouterUname | undefined = undefined,
     ): Promise<{
         succeeded: true,
         swapResponse: ISwapResponse,
@@ -103,7 +104,8 @@ export class SwapnetClient {
             (sellAmount !== undefined ? `&sellAmount=${sellAmount.toString()}` : "") +
             (buyAmount !== undefined ? `&buyAmount=${buyAmount.toString()}` : "") +
             (userAddress !== undefined ? `&userAddress=${userAddress}` : "") +
-            (includeRfq !== undefined ? `&includeRfq=${includeRfq}` : "");
+            (includeRfq !== undefined ? `&includeRfq=${includeRfq}` : "") +
+            (router !== undefined ? `&router=${router}` : "");
 
         const response = await fetch(url);
         const { succeeded, error } = await resolveErrorAsync(response);
