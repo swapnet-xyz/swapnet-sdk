@@ -11,6 +11,7 @@ export const ChainId = {
     Polygon: 137,
     Optimism: 10,
     Katana: 747474,
+    HyperEvm: 999,
 } as const;
 
 export type ChainName = keyof typeof ChainId;
@@ -47,6 +48,9 @@ export enum LiquiditySourceUname {
     Blasterswap = "Blasterswap",
     RingswapV2 = "RingswapV2",
     Cetus = "Cetus",
+    HyperswapV2 = "HyperswapV2",
+    HyperswapV3 = "HyperswapV3",
+    ProjectxV3 = "ProjectxV3",
 };
 
 export enum RouterUname {

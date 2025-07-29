@@ -178,4 +178,13 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.Blasterswap]: {
         convertToLiquidityInfo: notSupported,
     },
+    [LiquiditySourceUname.HyperswapV2]: {
+        convertToLiquidityInfo: notSupported,
+    },
+    [LiquiditySourceUname.HyperswapV3]: {
+        convertToLiquidityInfo: notSupported,
+    },
+    [LiquiditySourceUname.ProjectxV3]: {
+        convertToLiquidityInfo: notSupported,
+    },
 };
