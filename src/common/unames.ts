@@ -1,5 +1,5 @@
 
-
+// Use chain IDs from: https://docs.expand.network/ids/chain-ids
 export const ChainId = {
     Ethereum: 1,
     ArbitrumOne: 42161,
@@ -12,6 +12,7 @@ export const ChainId = {
     Optimism: 10,
     Katana: 747474,
     HyperEvm: 999,
+    Solana: 900,
 } as const;
 
 export type ChainName = keyof typeof ChainId;
@@ -51,6 +52,7 @@ export enum LiquiditySourceUname {
     HyperswapV2 = "HyperswapV2",
     HyperswapV3 = "HyperswapV3",
     ProjectxV3 = "ProjectxV3",
+    Raydium = "Raydium",
 };
 
 export enum RouterUname {

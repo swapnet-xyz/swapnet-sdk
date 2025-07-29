@@ -187,4 +187,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.ProjectxV3]: {
         convertToLiquidityInfo: notSupported,
     },
+    [LiquiditySourceUname.Raydium]: {
+        convertToLiquidityInfo: notSupported,
+    },
 };
