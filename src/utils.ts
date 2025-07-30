@@ -50,7 +50,7 @@ export const toTokenUnits = (tokenAmount: bigint, decimals: number): number => {
 };
 
 export const toCanonicalCase = (address: string, chainId?: ChainId): string => {
-    if (chainId === ChainId.Sui) {
+    if (chainId === ChainId.Solana || chainId === ChainId.Sui) {
         return address;
     }
     return address.toLowerCase();
