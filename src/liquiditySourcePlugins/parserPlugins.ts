@@ -190,4 +190,10 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.RaydiumClmm]: {
         convertToLiquidityInfo: notSupported,
     },
+    [LiquiditySourceUname.RaydiumCpmm]: {
+        convertToLiquidityInfo: notSupported,
+    },
+    [LiquiditySourceUname.OrcaClmm]: {
+        convertToLiquidityInfo: notSupported,
+    },
 };

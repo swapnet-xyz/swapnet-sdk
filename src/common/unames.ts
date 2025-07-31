@@ -53,6 +53,8 @@ export enum LiquiditySourceUname {
     HyperswapV3 = "HyperswapV3",
     ProjectxV3 = "ProjectxV3",
     RaydiumClmm = "RaydiumClmm",
+    RaydiumCpmm = "RaydiumCpmm",
+    OrcaClmm = "OrcaClmm",
 };
 
 export enum RouterUname {
