@@ -151,13 +151,13 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: invalidRoute,
     },
     [LiquiditySourceUname.Clipper]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.SushiswapV2]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.SushiswapV3]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.AerodromeV2]: {
         convertToLiquidityInfo: convertWithFeeInBps,
@@ -179,21 +179,21 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.HyperswapV2]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.HyperswapV3]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.ProjectxV3]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.RaydiumClmm]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.RaydiumCpmm]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.OrcaClmm]: {
-        convertToLiquidityInfo: notSupported,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
 };
