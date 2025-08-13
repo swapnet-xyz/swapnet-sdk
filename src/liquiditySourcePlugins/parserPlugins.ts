@@ -110,7 +110,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     //     convertToLiquidityInfo: converWithFee,
     // },
     [LiquiditySourceUname.Cetus]: {
-        convertToLiquidityInfo: convertWithFee,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.CurveV1]: {
         convertToLiquidityInfo: convertWithoutDetails,
