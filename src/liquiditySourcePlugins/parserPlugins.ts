@@ -154,10 +154,10 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.SushiswapV2]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.SushiswapV3]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.AerodromeV2]: {
         convertToLiquidityInfo: convertWithFeeInBps,
@@ -179,13 +179,13 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: notSupported,
     },
     [LiquiditySourceUname.HyperswapV2]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.HyperswapV3]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.ProjectxV3]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.RaydiumClmm]: {
         convertToLiquidityInfo: convertWithoutDetails,
