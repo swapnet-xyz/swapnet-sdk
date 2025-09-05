@@ -196,4 +196,13 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.OrcaClmm]: {
         convertToLiquidityInfo: convertWithoutDetails,
     },
+    [LiquiditySourceUname.HybraV3]: {
+        convertToLiquidityInfo: convertWithFee,
+    },
+    [LiquiditySourceUname.KittenswapV4]: {
+        convertToLiquidityInfo: convertWithFee,
+    },
+    [LiquiditySourceUname.GliquidV4]: {
+        convertToLiquidityInfo: convertWithFee,
+    },
 };

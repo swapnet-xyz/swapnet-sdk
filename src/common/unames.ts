@@ -55,6 +55,9 @@ export enum LiquiditySourceUname {
     RaydiumClmm = "RaydiumClmm",
     RaydiumCpmm = "RaydiumCpmm",
     OrcaClmm = "OrcaClmm",
+    HybraV3 = "HybraV3",
+    KittenswapV4 = "KittenswapV4",
+    GliquidV4 = "GliquidV4",
 };
 
 export enum RouterUname {
