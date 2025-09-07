@@ -205,4 +205,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.GliquidV4]: {
         convertToLiquidityInfo: convertWithFee,
     },
+    [LiquiditySourceUname.UpheavalV3]: {
+        convertToLiquidityInfo: convertWithFee,
+    },
 };
