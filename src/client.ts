@@ -78,7 +78,7 @@ export class SwapnetClient {
         sellAmount: bigint | undefined,
         buyAmount: bigint | undefined,
         userAddress: string | undefined = undefined,
-        includeRfq: boolean | undefined = undefined,
+        useRfq: boolean | undefined = undefined,
         router: RouterUname | undefined = undefined,
     ): Promise<{
         succeeded: true,
@@ -104,7 +104,7 @@ export class SwapnetClient {
             (sellAmount !== undefined ? `&sellAmount=${sellAmount.toString()}` : "") +
             (buyAmount !== undefined ? `&buyAmount=${buyAmount.toString()}` : "") +
             (userAddress !== undefined ? `&userAddress=${userAddress}` : "") +
-            (includeRfq !== undefined ? `&includeRfq=${includeRfq}` : "") +
+            (useRfq !== undefined ? `&useRfq=${useRfq}` : "") +
             (router !== undefined ? `&router=${router}` : "");
 
         const response = await fetch(url);

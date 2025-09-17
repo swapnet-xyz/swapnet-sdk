@@ -78,8 +78,10 @@ export interface ISwapResponse {
     sell: ITokenAmountInfo;
     buy: ITokenAmountInfo;
     routes: Array<IRouteInfoInResponse>;
-    calldata?: string;
     estimatedGas?: string;
+    calldata?: string;
+    routerAddress?: string;
+    gasLimit?: string;
 }
 
 export interface ITokenStaticInfo {
