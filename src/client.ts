@@ -77,9 +77,11 @@ export class SwapnetClient {
         buyTokenAddress: string,
         sellAmount: bigint | undefined,
         buyAmount: bigint | undefined,
-        userAddress: string | undefined = undefined,
         useRfq: boolean | undefined = undefined,
         router: RouterUname | undefined = undefined,
+        includeCalldata: boolean | undefined = undefined,
+        userAddress: string | undefined = undefined,
+        slippageTolerance: number | undefined = undefined,
     ): Promise<{
         succeeded: true,
         swapResponse: ISwapResponse,
@@ -96,6 +98,12 @@ export class SwapnetClient {
             throw new Error(`Both sellAmount and buyAmount are specified!`);
         }
 
+        if (includeCalldata) {
+            if (userAddress === undefined || slippageTolerance === undefined) {
+                throw new Error(`Both userAddress and slippageTolerance must be provided if calldata is requested!`);
+            }
+        }
+
         const url = `${this._baseUrl}/api/${this._apiVersion}/swap?` +
             `apiKey=${this._apiKey}&` +
             `chainId=${chainId}&` +
@@ -103,9 +111,11 @@ export class SwapnetClient {
             `buyToken=${buyTokenAddress}` +
             (sellAmount !== undefined ? `&sellAmount=${sellAmount.toString()}` : "") +
             (buyAmount !== undefined ? `&buyAmount=${buyAmount.toString()}` : "") +
-            (userAddress !== undefined ? `&userAddress=${userAddress}` : "") +
             (useRfq !== undefined ? `&useRfq=${useRfq}` : "") +
-            (router !== undefined ? `&router=${router}` : "");
+            (router !== undefined ? `&router=${router}` : "") +
+            (includeCalldata !== undefined ? `&includeCalldata=${includeCalldata}` : "") +
+            (userAddress !== undefined ? `&userAddress=${userAddress}` : "") +
+            (slippageTolerance !== undefined ? `&slippageTolerance=${slippageTolerance}` : "");
 
         const response = await fetch(url);
         const { succeeded, error } = await resolveErrorAsync(response);
