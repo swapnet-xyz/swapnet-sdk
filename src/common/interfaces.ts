@@ -75,8 +75,8 @@ export interface ISwapResponse {
     block?: number;
     nativeTokenUsdPrice?: number;
     tokens: Array<ITokenInfoInResponse>;
-    sell: ITokenAmountInfo;
-    buy: ITokenAmountInfo;
+    sell: ITokenAmountInfo & { wrapFromNative?: boolean; };
+    buy: ITokenAmountInfo & { unwrapToNative?: boolean; };
     routes: Array<IRouteInfoInResponse>;
     estimatedGas?: string;
     calldata?: string;

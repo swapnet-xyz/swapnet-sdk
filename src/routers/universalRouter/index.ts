@@ -35,7 +35,7 @@ export const encodeForUniversalRouter = (
         recipientAddress = SENDER_AS_RECIPIENT;
     }
 
-    const { tokenOps, amountIn, fromToken, toToken, } = routingPlan
+    const { tokenOps, from, to, } = routingPlan
     const planner = new RoutePlanner();
 
 
@@ -45,13 +45,13 @@ export const encodeForUniversalRouter = (
     }
 
     if (wrapInput) {
-        planner.addCommand(CommandType.WRAP_ETH, [ ROUTER_AS_RECIPIENT, amountIn ]);
+        planner.addCommand(CommandType.WRAP_ETH, [ ROUTER_AS_RECIPIENT, from.amount ]);
     }
     else {
         planner.addCommand(CommandType.PERMIT2_TRANSFER_FROM, [
-            fromToken,
+            from.address,
             ROUTER_AS_RECIPIENT,
-            amountIn,
+            from.amount,
         ]);
     }
 
@@ -86,7 +86,7 @@ export const encodeForUniversalRouter = (
     if (unwrapOutput) {
         planner.addCommand(CommandType.UNWRAP_WETH, [recipientAddress, amountOutMinimum]);
     } else {
-        planner.addCommand(CommandType.SWEEP, [toToken, recipientAddress, amountOutMinimum]);
+        planner.addCommand(CommandType.SWEEP, [to.address, recipientAddress, amountOutMinimum]);
     }
 
     const { commands, inputs } = planner;

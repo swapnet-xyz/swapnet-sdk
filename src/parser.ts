@@ -93,13 +93,22 @@ export const parse = (swapResponse: ISwapResponse): IRoutingPlan => {
     const sellTokenInfo = swapResponse.tokens.find(token => token.referenceId === swapResponse.sell.referenceId)!;
     const buyTokenInfo = swapResponse.tokens.find(token => token.referenceId === swapResponse.buy.referenceId)!;
 
+    const wrapFromNative = swapResponse.sell.wrapFromNative === true;
+    const unwrapToNative = swapResponse.buy.unwrapToNative === true;
+
     return {
         tokenOps,
         swaps,
-        fromToken: sellTokenInfo.address,
-        toToken: buyTokenInfo.address,
-        amountIn: BigInt(swapResponse.sell.amount),
-        amountOut: BigInt(swapResponse.buy.amount),
+        from: {
+            address: sellTokenInfo.address,
+            amount: BigInt(swapResponse.sell.amount),
+            wrapFromNative,
+        },
+        to: {
+            address: buyTokenInfo.address,
+            amount: BigInt(swapResponse.buy.amount),
+            unwrapToNative,
+        }
     };
 }
 
@@ -115,7 +124,7 @@ export const printRoutingPlan = (routingPlan: IRoutingPlan): void => {
     });
 
     console.log(`Routing plan:`);
-    console.log(`${routingPlan.amountIn} ${routingPlan.fromToken} => ${routingPlan.amountOut} ${routingPlan.toToken}`);
+    console.log(`${routingPlan.from.amount} ${routingPlan.from.address} => ${routingPlan.to.amount} ${routingPlan.to.address}`);
     tokenOps.forEach((tokenOp, i) => {
         console.log(`  ${i}: ${tokenOp.tokenInfo.symbol}, fromSwaps: ${tokenOp.fromSwaps.map(s => swapToIndex.get(s))},  toSwaps: ${tokenOp.toSwaps.map(s => swapToIndex.get(s))}`);
     });

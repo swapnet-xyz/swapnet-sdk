@@ -83,8 +83,14 @@ export interface TokenOperation {
 export interface IRoutingPlan {
     tokenOps: TokenOperation [],    // in topological order
     swaps: Swap [],               // in topological order
-    fromToken: string,
-    toToken: string,
-    amountIn: bigint,
-    amountOut: bigint,
+    from: {
+        address: string;
+        amount: bigint;
+        wrapFromNative: boolean;
+    },
+    to: {
+        address: string;
+        amount: bigint;
+        unwrapToNative: boolean;
+    },
 };

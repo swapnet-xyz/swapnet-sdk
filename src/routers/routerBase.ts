@@ -27,7 +27,7 @@ export const resolveEncodeOptions = (routingPlan: IRoutingPlan, options: IEncode
         if (slippageTolerance === undefined) {
             slippageTolerance = 0.01;
         }
-        amountOutMinimum = toAmountOutMinimum(routingPlan.amountOut, slippageTolerance);
+        amountOutMinimum = toAmountOutMinimum(routingPlan.to.amount, slippageTolerance);
     }
 
 
