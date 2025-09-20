@@ -28,7 +28,7 @@ const simulateAsync = async (
 
     const routingPlan = parse(swapResponse);    // parse swapnet API response
 
-    const { amountOutMinimum, wrapInput, unwrapOutput } = resolveEncodeOptions(routingPlan, encodeOptions);
+    const { amountOutMinimum, wrapFromNative, unwrapToNative } = resolveEncodeOptions(routingPlan, encodeOptions);
 
     const calldata = router.encode(routingPlan, encodeOptions);     // use router object to encode calldata, with injected options
 
@@ -44,8 +44,8 @@ const simulateAsync = async (
             routingPlan.fromToken,
             routingPlan.toToken,
             routingPlan.amountIn,
-            wrapInput,
-            unwrapOutput,
+            wrapFromNative,
+            unwrapToNative,
             calldata,
         );
 
@@ -57,6 +57,6 @@ const simulateAsync = async (
 }
 
 await simulateAsync('10k ORBIT to PAC', orbitToPac10k, { slippageTolerance: 0.01 }, 5358636);
-await simulateAsync('30k ORBIT to ETH', orbitToEth30k, { unwrapOutput: true, slippageTolerance: 0.01 }, 5364002);
-await simulateAsync('10 ETH to ORBIT', ethToOrbit10, { wrapInput: true, slippageTolerance: 0.01 }, 5371440);
+await simulateAsync('30k ORBIT to ETH', orbitToEth30k, { unwrapToNative: true, slippageTolerance: 0.01 }, 5364002);
+await simulateAsync('10 ETH to ORBIT', ethToOrbit10, { wrapFromNative: true, slippageTolerance: 0.01 }, 5371440);
 await simulateAsync('10k USDB to WETH', usdbToWeth10k, { slippageTolerance: 0.01 }, 5439322);

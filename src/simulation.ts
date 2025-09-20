@@ -53,8 +53,8 @@ export class SettlementSimulation {
         inputTokenAddress: string,
         outputTokenAddress: string,
         amountIn: bigint,
-        wrapInput: boolean,
-        upwrapOutput: boolean,
+        wrapFromNative: boolean,
+        unwrapToNative: boolean,
         calldata: string,
         otherAsIfs: AddressAsIf [] = [],
     ): Promise<{ gas: bigint, amountOut: bigint, }> {
@@ -63,7 +63,7 @@ export class SettlementSimulation {
         }
 
         let ethBalance: bigint = 10n ** 18n;
-        if (wrapInput) {
+        if (wrapFromNative) {
             ethBalance += amountIn;
         }
 
@@ -80,7 +80,7 @@ export class SettlementSimulation {
                     .is(multicallDeployedCode)
             );
 
-        if (!wrapInput) {
+        if (!wrapFromNative) {
             stateBuilder
                 .asif(
                     tokenAt(inputTokenAddress)
@@ -113,12 +113,12 @@ export class SettlementSimulation {
         const [ blockTag, override ] = await stateBuilder.getStateAsync();
 
         let ethAmountToSend = 0n;
-        if (wrapInput) {
+        if (wrapFromNative) {
             ethAmountToSend = amountIn;
         }
 
         let balanceOfBuyTokenCall;
-        if (upwrapOutput) {
+        if (unwrapToNative) {
             balanceOfBuyTokenCall = [senderAddress, 0n, multicallInterface.encodeFunctionData("getEthBalance", [ senderAddress ])];
         }
         else {

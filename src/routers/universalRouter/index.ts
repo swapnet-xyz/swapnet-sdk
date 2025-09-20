@@ -24,8 +24,8 @@ export const encodeForUniversalRouter = (
 ): string => {
     const {
         amountOutMinimum,
-        wrapInput,
-        unwrapOutput,
+        wrapFromNative,
+        unwrapToNative,
         deadline,
     } = resolveEncodeOptions(routingPlan, options);
 
@@ -44,7 +44,7 @@ export const encodeForUniversalRouter = (
         planner.addCommand(CommandType.PERMIT2_PERMIT, [ permit, signature ]);
     }
 
-    if (wrapInput) {
+    if (wrapFromNative) {
         planner.addCommand(CommandType.WRAP_ETH, [ ROUTER_AS_RECIPIENT, from.amount ]);
     }
     else {
@@ -83,7 +83,7 @@ export const encodeForUniversalRouter = (
         });
     });
 
-    if (unwrapOutput) {
+    if (unwrapToNative) {
         planner.addCommand(CommandType.UNWRAP_WETH, [recipientAddress, amountOutMinimum]);
     } else {
         planner.addCommand(CommandType.SWEEP, [to.address, recipientAddress, amountOutMinimum]);

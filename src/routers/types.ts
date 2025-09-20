@@ -7,14 +7,14 @@ export interface IEncodeOptions {
     amountOutMinimum?: bigint,
     recipientAddress?: string,
     deadline?: bigint,
-    wrapInput?: boolean,
-    unwrapOutput?: boolean,
+    wrapFromNative?: boolean,
+    unwrapToNative?: boolean,
 };
 
 export interface IResolvedEncodeOptions {
     amountOutMinimum: bigint,
-    wrapInput: boolean,
-    unwrapOutput: boolean,
+    wrapFromNative: boolean,
+    unwrapToNative: boolean,
     deadline: bigint | undefined,
 };
 

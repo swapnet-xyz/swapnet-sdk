@@ -17,7 +17,7 @@ export abstract class RouterBase implements IRouter {
 }
 
 export const resolveEncodeOptions = (routingPlan: IRoutingPlan, options: IEncodeOptions): IResolvedEncodeOptions => {
-    let { slippageTolerance, amountOutMinimum, deadline, wrapInput, unwrapOutput } = options;
+    let { slippageTolerance, amountOutMinimum, deadline, wrapFromNative, unwrapToNative } = options;
 
     if (slippageTolerance !== undefined && amountOutMinimum !== undefined) {
         throw new Error(`Conflict encoding options: both 'slippageTolerance' and 'amountOutMinimum' are specified.`);
@@ -30,19 +30,13 @@ export const resolveEncodeOptions = (routingPlan: IRoutingPlan, options: IEncode
         amountOutMinimum = toAmountOutMinimum(routingPlan.to.amount, slippageTolerance);
     }
 
-
-    if (wrapInput === undefined) {
-        wrapInput = false;
-    }
-
-    if (unwrapOutput === undefined) {
-        unwrapOutput = false;
-    }
+    wrapFromNative = routingPlan.from.wrapFromNative || (wrapFromNative === true);
+    unwrapToNative = routingPlan.to.unwrapToNative || (unwrapToNative === true);
 
     return {
         amountOutMinimum,
-        wrapInput,
-        unwrapOutput,
+        wrapFromNative,
+        unwrapToNative,
         deadline,
     };
 }
