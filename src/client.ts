@@ -36,7 +36,7 @@ const resolveErrorAsync = async (response: Response): Promise<{ succeeded: boole
 export class SwapnetClient {
     constructor (
         private readonly _apiKey: string,
-        private readonly _baseUrl: string = 'https://app.swap-net.xyz',
+        private readonly _baseUrl: string = 'https://app.swap-net.xyz/api',
         private readonly _apiVersion: string = 'v1.0',
     ) {}
 
@@ -50,7 +50,7 @@ export class SwapnetClient {
         error: string,
     }> {
 
-        const url = `${this._baseUrl}/api/${this._apiVersion}/tokens?` +
+        const url = `${this._baseUrl}/${this._apiVersion}/tokens?` +
             `apiKey=${this._apiKey}&` + 
             `chainId=${chainId}`;
 
@@ -104,7 +104,7 @@ export class SwapnetClient {
             }
         }
 
-        const url = `${this._baseUrl}/api/${this._apiVersion}/swap?` +
+        const url = `${this._baseUrl}/${this._apiVersion}/swap?` +
             `apiKey=${this._apiKey}&` +
             `chainId=${chainId}&` +
             `sellToken=${sellTokenAddress}&` +
