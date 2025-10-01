@@ -13,6 +13,7 @@ export const ChainId = {
     Katana: 747474,
     HyperEvm: 999,
     Solana: 900,
+    Plasma: 9745,
 } as const;
 
 export type ChainName = keyof typeof ChainId;
