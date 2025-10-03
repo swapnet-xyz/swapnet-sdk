@@ -48,8 +48,11 @@ export interface BebopLimitOrderInfo extends LiquidityInfoBase {
 // export interface UniswapV2Info extends LiquidityInfoBase {
 // };
 
-// export interface CurveV1Info extends LiquidityInfoBase {
-// };
+export interface CurveV1Info extends LiquidityInfoBase {
+    isLegacy: boolean;
+    fromTokenIndex: number;
+    toTokenIndex: number;
+};
 
 export type LiquidityInfo = LiquidityInfoBase
     | LimitOrderInfo
@@ -58,7 +61,8 @@ export type LiquidityInfo = LiquidityInfoBase
     | UniswapV4Info
     | AerodromeV3Info
     | RingswapV2Info
-    | BebopLimitOrderInfo;
+    | BebopLimitOrderInfo
+    | CurveV1Info;
 
 export interface Swap {
     fromTokenOp: TokenOperation;

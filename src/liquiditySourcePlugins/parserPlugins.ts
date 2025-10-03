@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -113,7 +113,16 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.CurveV1]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            const details = route.details as ICurveV1Details;
+            return {
+                source: route.name,
+                address: route.address,
+                isLegacy: details.isLegacy,
+                fromTokenIndex: details.fromTokenIndex,
+                toTokenIndex: details.toTokenIndex,
+            } as CurveV1Info;
+        },
     },
     [LiquiditySourceUname.BebopLimitOrder]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {

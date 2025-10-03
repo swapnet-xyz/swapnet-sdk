@@ -59,7 +59,13 @@ export interface IBebopLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
-export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IUniswapV4Details | IAerodromeV3Details | IRingswapV2Details | ILimitOrderDetailsBase;
+export interface ICurveV1Details {
+    isLegacy: boolean;
+    fromTokenIndex: number;
+    toTokenIndex: number;
+}
+
+export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IUniswapV4Details | IAerodromeV3Details | IRingswapV2Details | ILimitOrderDetailsBase | ICurveV1Details;
 
 export interface IRouteInfoInResponse {
     address: string;
