@@ -220,4 +220,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.Fluid]: {
         convertToLiquidityInfo: convertWithoutDetails,
     },
+    [LiquiditySourceUname.BalancerV3]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
 };
