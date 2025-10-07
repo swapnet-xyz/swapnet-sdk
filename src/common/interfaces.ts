@@ -65,7 +65,12 @@ export interface ICurveV1Details {
     toTokenIndex: number;
 }
 
-export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IUniswapV4Details | IAerodromeV3Details | IRingswapV2Details | ILimitOrderDetailsBase | ICurveV1Details;
+export interface IBalancerV3Details {
+    wrapToErc4626: boolean;
+    unwrapFromErc4626: boolean;
+}
+
+export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IUniswapV4Details | IAerodromeV3Details | IRingswapV2Details | ILimitOrderDetailsBase | ICurveV1Details | IBalancerV3Details;
 
 export interface IRouteInfoInResponse {
     address: string;
