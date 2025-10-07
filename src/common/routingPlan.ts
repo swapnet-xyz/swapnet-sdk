@@ -54,6 +54,11 @@ export interface CurveV1Info extends LiquidityInfoBase {
     toTokenIndex: number;
 };
 
+export interface BalancerV3Info extends LiquidityInfoBase {
+    wrapToErc4626: boolean;
+    unwrapFromErc4626: boolean;
+};
+
 export type LiquidityInfo = LiquidityInfoBase
     | LimitOrderInfo
     | UniswapV2Info
@@ -62,7 +67,8 @@ export type LiquidityInfo = LiquidityInfoBase
     | AerodromeV3Info
     | RingswapV2Info
     | BebopLimitOrderInfo
-    | CurveV1Info;
+    | CurveV1Info
+    | BalancerV3Info;
 
 export interface Swap {
     fromTokenOp: TokenOperation;

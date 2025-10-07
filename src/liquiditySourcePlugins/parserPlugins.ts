@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info, type IBalancerV3Details } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -221,6 +221,21 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.BalancerV3]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            if (route.details === undefined) {
+                throw new Error(`No details found for Balancer V3 route!`);
+            }
+            const { wrapToErc4626, unwrapFromErc4626 } = route.details as IBalancerV3Details;
+
+            if (wrapToErc4626 === undefined || unwrapFromErc4626 === undefined) {
+                throw new Error(`Invalid Balancer V3 route details!`);
+            }
+            return {
+                source: route.name,
+                address: route.address,
+                wrapToErc4626,
+                unwrapFromErc4626,
+            };
+        },
     },
 };
