@@ -238,4 +238,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
             };
         },
     },
+    [LiquiditySourceUname.UltraSolidV3]: {
+        convertToLiquidityInfo: convertWithFee,
+    },
 };
