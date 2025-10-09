@@ -85,10 +85,16 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     },
     [LiquiditySourceUname.RingswapV2]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            if (route.details === undefined || (route.details as IUniswapV2Details).feeInBps === undefined) {
+                throw new Error(`Invalid Uniswap V2 Like route details!`);
+            }
+
+            const feeInBps: bigint = BigInt((route.details as IUniswapV2Details).feeInBps);
             const { fromFewWrappedTokenAddress, toFewWrappedTokenAddress } = route.details as IRingswapV2Details;
             return {
                 source: route.name,
                 address: route.address,
+                feeInBps,
                 fromFewWrappedTokenAddress,
                 toFewWrappedTokenAddress,
             } as RingswapV2Info;

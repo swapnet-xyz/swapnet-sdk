@@ -31,6 +31,7 @@ export interface UniswapV2Info extends LiquidityInfoBase {
 };
 
 export interface RingswapV2Info extends LiquidityInfoBase {
+    feeInBps: bigint;
     fromFewWrappedTokenAddress: string;
     toFewWrappedTokenAddress: string;
 };
