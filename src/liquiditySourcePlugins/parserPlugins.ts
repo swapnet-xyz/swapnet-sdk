@@ -247,4 +247,13 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.UltrasolidV3]: {
         convertToLiquidityInfo: convertWithFee,
     },
+    [LiquiditySourceUname.PancakeswapV2]: {
+        convertToLiquidityInfo: convertWithFeeInBps,
+    },
+    [LiquiditySourceUname.QuickswapV2]: {
+        convertToLiquidityInfo: convertWithFeeInBps,
+    },
+    [LiquiditySourceUname.QuickswapV3]: {
+        convertToLiquidityInfo: convertWithFee,
+    },
 };
