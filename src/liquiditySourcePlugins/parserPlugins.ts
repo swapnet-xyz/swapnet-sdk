@@ -254,6 +254,6 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.QuickswapV3]: {
-        convertToLiquidityInfo: convertWithFee,
+        convertToLiquidityInfo: convertWithoutDetails,
     },
 };
