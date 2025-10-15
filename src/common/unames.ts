@@ -14,6 +14,7 @@ export const ChainId = {
     HyperEvm: 999,
     Solana: 900,
     Plasma: 9745,
+    MonadTestnet: 10143,
 } as const;
 
 export type ChainName = keyof typeof ChainId;
