@@ -78,10 +78,10 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.ThrusterV2_3k]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.ThrusterV2_10k]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.RingswapV2]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
