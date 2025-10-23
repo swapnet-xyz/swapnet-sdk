@@ -59,6 +59,10 @@ export interface IBebopLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
+export interface IClipperLimitOrderDetails extends ILimitOrderDetailsBase {
+    calldata: string;
+}
+
 export interface ICurveV1Details {
     isLegacy: boolean;
     fromTokenIndex: number;

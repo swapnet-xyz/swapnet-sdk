@@ -37,6 +37,7 @@ export enum LiquiditySourceUname {
     PancakeswapV3 = "PancakeswapV3",
     CurveV1 = "CurveV1",
     Clipper = "Clipper",
+    ClipperLimitOrder = "LimitOrder-Clipper",
     SushiswapV2 = "SushiswapV2",
     SushiswapV3 = "SushiswapV3",
     NativeOrderbook = "Orderbook-Native",

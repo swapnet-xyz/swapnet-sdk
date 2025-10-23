@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info, type IBalancerV3Details } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info, type IBalancerV3Details, type IClipperLimitOrderDetails } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -156,6 +156,16 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
                 nonce: BigInt(details.nonce),
                 deadline: BigInt(details.deadline),
                 signature: details.signature,
+            };
+        },
+    },
+    [LiquiditySourceUname.ClipperLimitOrder]: {
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            const details = route.details as IClipperLimitOrderDetails;
+            return {
+                source: route.name,
+                address: route.address,
+                calldata: details.calldata,
             };
         },
     },

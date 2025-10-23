@@ -46,6 +46,11 @@ export interface BebopLimitOrderInfo extends LiquidityInfoBase {
     partialFillOffset: number;
 };
 
+export interface ClipperLimitOrderInfo extends LiquidityInfoBase {
+    calldata: string;
+};
+
+
 // export interface UniswapV2Info extends LiquidityInfoBase {
 // };
 
@@ -68,6 +73,7 @@ export type LiquidityInfo = LiquidityInfoBase
     | AerodromeV3Info
     | RingswapV2Info
     | BebopLimitOrderInfo
+    | ClipperLimitOrderInfo
     | CurveV1Info
     | BalancerV3Info;
 
