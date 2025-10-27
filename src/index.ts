@@ -18,3 +18,5 @@ export * from './simulation.js'
 
 export * from './services/http.js'
 export * from './services/EtherscanClient.js'
+export * from './services/PriceClient.js'
+export * from './services/CoingeckoPriceClient.js'
