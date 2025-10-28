@@ -65,3 +65,5 @@ declare global {
 String.prototype.toCanonicalCase = function (chainId?: ChainId): string {
   return toCanonicalCase(this.toString(), chainId);
 };
+
+export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));

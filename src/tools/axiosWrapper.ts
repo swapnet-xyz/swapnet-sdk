@@ -64,6 +64,3 @@ const axiosInstanceConfig: AxiosRequestConfig = {
 };
 const axiosInstance = Axios.create(axiosInstanceConfig);
 export const axiosWrapper = new AxiosWrapper(axiosInstance);
-
-export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
-

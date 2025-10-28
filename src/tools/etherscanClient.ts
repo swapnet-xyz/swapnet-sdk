@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import log from "loglevel";
-import { axiosWrapper, type IRequest, sleep } from "./http.js";
+import { axiosWrapper, type IRequest } from "./axiosWrapper.js";
+import { sleep } from "../utils.js";
 
 type ResolveFunc = (etherScanResult: any) => void;
 type RejectFunc = (error: Error) => void;

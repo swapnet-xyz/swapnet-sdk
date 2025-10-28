@@ -16,5 +16,5 @@ export * from './routers/universalRouter/index.js'
 export * from './ethers-override/index.js'
 export * from './simulation.js'
 
-export * from './services/http.js'
-export * from './services/EtherscanClient.js'
+export * from './tools/axiosWrapper.js'
+export * from './tools/etherscanClient.js'
