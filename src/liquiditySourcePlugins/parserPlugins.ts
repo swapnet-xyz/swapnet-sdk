@@ -37,6 +37,18 @@ const convertWithFee = (route: IRouteInfoInResponse): LiquidityInfo => {
     };
 };
 
+const convertWithTickSpacing = (route: IRouteInfoInResponse): LiquidityInfo => {
+    if (route.details === undefined || (route.details as IAerodromeV3Details).tickSpacing === undefined) {
+        throw new Error(`Invalid Aerodrome V3 route details!`);
+    }
+    const tickSpacing: bigint = BigInt((route.details as IAerodromeV3Details).tickSpacing);
+    return {
+        source: route.name,
+        address: route.address,
+        tickSpacing,
+    };
+};
+
 const convertUniswapV4 = (route: IRouteInfoInResponse): LiquidityInfo => {
     if (route.details === undefined) {
         throw new Error(`Invalid Uniswap V4 route details!`);
@@ -188,17 +200,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithFeeInBps,
     },
     [LiquiditySourceUname.AerodromeV3]: {
-        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
-            if (route.details === undefined || (route.details as IAerodromeV3Details).tickSpacing === undefined) {
-                throw new Error(`Invalid Aerodrome V3 route details!`);
-            }
-            const tickSpacing: bigint = BigInt((route.details as IAerodromeV3Details).tickSpacing);
-            return {
-                source: route.name,
-                address: route.address,
-                tickSpacing,
-            };
-        },
+        convertToLiquidityInfo: convertWithTickSpacing,
     },
     [LiquiditySourceUname.Blasterswap]: {
         convertToLiquidityInfo: notSupported,
@@ -265,5 +267,23 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     },
     [LiquiditySourceUname.QuickswapV3]: {
         convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.AlienBaseV2]: {
+        convertToLiquidityInfo: convertWithFeeInBps,
+    },
+    [LiquiditySourceUname.AlienBaseV3]: {
+        convertToLiquidityInfo: convertWithFee,
+    },
+    [LiquiditySourceUname.OmniExchangeV3]: {
+        convertToLiquidityInfo: convertWithFee,
+    },
+    [LiquiditySourceUname.QuickswapV4]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.HydrexFiV3]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.AerodromeForkV3]: {
+        convertToLiquidityInfo: convertWithTickSpacing,
     },
 };
