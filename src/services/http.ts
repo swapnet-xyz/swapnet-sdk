@@ -1,9 +1,11 @@
 import Axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from "axios";
 
-export type Headers = {
-  ["Content-Type"]?: string;
-  ["request-id"]?: string;
-} | Record<string, string>;
+export type Headers =
+  | {
+      ["Content-Type"]?: string;
+      ["request-id"]?: string;
+    }
+  | Record<string, string>;
 
 export interface IRequest {
   method: "get" | "post";
@@ -66,4 +68,3 @@ const axiosInstance = Axios.create(axiosInstanceConfig);
 export const axiosWrapper = new AxiosWrapper(axiosInstance);
 
 export const sleep = (ms: number) => new Promise((res) => setTimeout(res, ms));
-

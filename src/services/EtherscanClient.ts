@@ -337,7 +337,11 @@ export class EtherscanClient {
     action: "tokentx" | "txlistinternal" | "txlist",
     validateTransfer: (transfer: any) => void,
   ): Promise<any[]> {
-    if (startBlockInclusive < 0 || endBlockExclusive < 0 || startBlockInclusive >= endBlockExclusive) {
+    if (
+      startBlockInclusive < 0 ||
+      endBlockExclusive < 0 ||
+      startBlockInclusive >= endBlockExclusive
+    ) {
       throw new Error(`Invalid block range [${startBlockInclusive}, ${endBlockExclusive})`);
     }
 
@@ -476,17 +480,14 @@ export class EtherscanClient {
           }
         },
       )
-    ).reduce<Map<string, EtherScanErc20Transfer[]>>(
-      (dataByPartialUid, erc20TransferData) => {
-        const partialUid: string = calculatePartialUid(erc20TransferData);
-        if (!dataByPartialUid.has(partialUid)) {
-          dataByPartialUid.set(partialUid, []);
-        }
-        dataByPartialUid.get(partialUid)!.push(erc20TransferData);
-        return dataByPartialUid;
-      },
-      new Map<string, EtherScanErc20Transfer[]>(),
-    );
+    ).reduce<Map<string, EtherScanErc20Transfer[]>>((dataByPartialUid, erc20TransferData) => {
+      const partialUid: string = calculatePartialUid(erc20TransferData);
+      if (!dataByPartialUid.has(partialUid)) {
+        dataByPartialUid.set(partialUid, []);
+      }
+      dataByPartialUid.get(partialUid)!.push(erc20TransferData);
+      return dataByPartialUid;
+    }, new Map<string, EtherScanErc20Transfer[]>());
 
     return Array.from(erc20TransfersByPartialUid.entries())
       .map(([partialUid, erc20Transfers]) => {
@@ -593,7 +594,10 @@ export class EtherscanClient {
     return txs.map((txData) => convertEtherScanTxToTransactionData(chainId, txData));
   }
 
-  public async getBlockNumberForTimestampAsync(chainId: number, timestamp: number): Promise<number> {
+  public async getBlockNumberForTimestampAsync(
+    chainId: number,
+    timestamp: number,
+  ): Promise<number> {
     const blockNumberStr = await this._retrySendAndValidateAsync(
       {
         chainId,
@@ -645,4 +649,3 @@ export class EtherscanClient {
     }
   }
 }
-
