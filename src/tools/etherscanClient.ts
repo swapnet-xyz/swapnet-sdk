@@ -33,6 +33,7 @@ export interface TransactionData {
   timestamp: number;
   to: string | null;
   value: string;
+  input: string;
   truncatedInput: string;
   status: number;
   gasUsed: string;
@@ -179,6 +180,7 @@ const convertEtherScanTxToTransactionData = (
     timestamp: Number(txData.timeStamp),
     to: txData.to === "" ? null : txData.to.toLowerCase(),
     value: txData.value,
+    input: txData.input,
     truncatedInput: txData.input.slice(0, 10),
     status: Number(txData.txreceipt_status),
     gasUsed: txData.gasUsed,
