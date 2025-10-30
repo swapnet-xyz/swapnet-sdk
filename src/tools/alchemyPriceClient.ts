@@ -7,6 +7,7 @@ interface AlchemyConfig {
 }
 
 interface AlchemyHistoricalPriceRequest {
+  network?: string;
   address?: string;
   symbol?: string;
   startTime: string;
@@ -35,6 +36,17 @@ export class AlchemyPriceClient implements IPriceClient {
     this.rateLimit = config.rateLimit || 1000; // Default 1 second between requests
   }
 
+  private getNetworkName(chainId: number): string {
+    const networkMap: Record<number, string> = {
+      1: "eth-mainnet",
+      10: "opt-mainnet",
+      137: "polygon-mainnet",
+      42161: "arb-mainnet",
+      8453: "base-mainnet",
+    };
+    return networkMap[chainId] || "eth-mainnet";
+  }
+
   private async enforceRateLimit(): Promise<void> {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;
@@ -47,18 +59,43 @@ export class AlchemyPriceClient implements IPriceClient {
   }
 
   async getHistoricalPrice(
-    tokenAddress: string,
     chainId: number,
-    timestamp: number,
+    tokenAddress: string,
+    timestampSeconds: number,
   ): Promise<number | null> {
     await this.enforceRateLimit();
 
     try {
-      // Create a time window around the target timestamp
-      const startTime = new Date((timestamp - 3600) * 1000).toISOString(); // 1 hour before
-      const endTime = new Date((timestamp + 3600) * 1000).toISOString(); // 1 hour after
+      // Convert timestamp to number if it's a string
+      const timestampNum = typeof timestampSeconds === 'string' ? parseInt(timestampSeconds, 10) : timestampSeconds;
+      
+      // Validate timestamp
+      if (!timestampNum || timestampNum <= 0 || isNaN(timestampNum)) {
+        console.error(
+          `Invalid timestamp ${timestampSeconds} for token ${tokenAddress} on chain ${chainId}`,
+        );
+        return null;
+      }
+      
+      // Alchemy returns prices at start of day (00:00:00Z) only
+      // Create a time window that spans at least 2 different days
+      const targetDate = new Date(timestampNum * 1000);
+      
+      // Get start of the day before target
+      const dayBefore = new Date(targetDate);
+      dayBefore.setUTCDate(dayBefore.getUTCDate() - 1);
+      dayBefore.setUTCHours(0, 0, 0, 0);
+      
+      // Get start of the day after target
+      const dayAfter = new Date(targetDate);
+      dayAfter.setUTCDate(dayAfter.getUTCDate() + 1);
+      dayAfter.setUTCHours(0, 0, 0, 0);
+      
+      const startTime = dayBefore.toISOString();
+      const endTime = dayAfter.toISOString();
 
       const requestBody: AlchemyHistoricalPriceRequest = {
+        network: this.getNetworkName(chainId),
         address: tokenAddress.toLowerCase(),
         startTime,
         endTime,
@@ -85,11 +122,11 @@ export class AlchemyPriceClient implements IPriceClient {
       if (data.data && data.data.length > 0) {
         // Find the price closest to the target timestamp
         let closestPrice = data.data[0];
-        let minDiff = Math.abs(new Date(data.data[0].timestamp).getTime() / 1000 - timestamp);
+        let minDiff = Math.abs(new Date(data.data[0].timestamp).getTime() / 1000 - timestampNum);
 
         for (const pricePoint of data.data) {
           const priceTimestamp = new Date(pricePoint.timestamp).getTime() / 1000;
-          const diff = Math.abs(priceTimestamp - timestamp);
+          const diff = Math.abs(priceTimestamp - timestampNum);
 
           if (diff < minDiff) {
             minDiff = diff;

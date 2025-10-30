@@ -1,7 +1,7 @@
 export interface IPriceClient {
   getHistoricalPrice(
-    tokenAddress: string,
     chainId: number,
-    timestamp: number,
+    tokenAddress: string,
+    timestampSeconds: number,
   ): Promise<number | null>;
 }
