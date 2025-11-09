@@ -277,6 +277,12 @@ export class EtherscanClient {
               );
               continue;
             }
+            
+            // Normalize "No transactions found" to empty array
+            if (status === "0" && message === "No transactions found") {
+              resolve([]);
+              continue;
+            }
           }
         }
 
@@ -684,6 +690,66 @@ export class EtherscanClient {
 
     log.debug(`[EtherScan] Got latest block number: ${blockNumber}`);
     return blockNumber;
+  }
+
+  /**
+   * Get token info (symbol, decimals) from Etherscan
+   * Uses the token module endpoint: module=token&action=tokeninfo
+   */
+  public async getTokenInfoAsync(
+    chainId: number,
+    contractAddress: string,
+  ): Promise<{ symbol: string; decimals: number } | null> {
+    try {
+      console.log("getting token info for", contractAddress);
+      const result = await this._retrySendAndValidateAsync(
+        {
+          chainId,
+          module: "token",
+          action: "tokeninfo",
+          contractaddress: contractAddress,
+        },
+        (result) => {
+          // Tokeninfo returns an array with one item
+          if (!Array.isArray(result) || result.length === 0) {
+            throw new Error(`Token info not found for ${contractAddress}`);
+          }
+        },
+      );
+
+      console.log("token info", result);
+
+      if (Array.isArray(result) && result.length > 0) {
+        const tokenInfo = result[0];
+        
+        // Skip NFTs (ERC721, ERC1155) - they have 0 decimals which breaks price calculations
+        const tokenType = tokenInfo.tokenType || "";
+        if (tokenType === "ERC721" || tokenType === "ERC1155") {
+          log.debug(`[EtherScan] Skipping NFT token ${contractAddress} (type: ${tokenType})`);
+          return null;
+        }
+
+        const symbol = tokenInfo.symbol || tokenInfo.tokenName || "UNKNOWN";
+        // divisor field contains the decimals (as string)
+        const decimalsStr = tokenInfo.divisor || tokenInfo.decimals || "18";
+        const decimals = parseInt(decimalsStr, 10);
+        
+        // If decimals is 0 or invalid (likely NFT or error), default to 18
+        const finalDecimals = !isNaN(decimals) && decimals > 0 ? decimals : 18;
+
+        log.debug(
+          `[EtherScan] Got token info for ${contractAddress}: ${symbol} (${finalDecimals} decimals)`,
+        );
+
+        return { symbol, decimals: finalDecimals };
+      }
+
+      return null;
+    } catch (error) {
+      console.log("failed to get token info for", contractAddress, error);
+      log.debug(`[EtherScan] Failed to get token info for ${contractAddress}:`, error);
+      return null;
+    }
   }
 }
 
