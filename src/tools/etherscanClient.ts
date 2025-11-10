@@ -277,7 +277,7 @@ export class EtherscanClient {
               );
               continue;
             }
-            
+
             // Normalize "No transactions found" to empty array
             if (status === "0" && message === "No transactions found") {
               resolve([]);
@@ -386,43 +386,55 @@ export class EtherscanClient {
     let nextStartBlock = startBlockInclusive;
 
     while (true) {
-      let pageResult: any[] = await this._retrySendAndValidateAsync(
-        {
-          chainId,
-          module: "account",
-          action,
-          address: accountAddress,
-          startblock: nextStartBlock,
-          endblock: endBlockExclusive - 1,
-          page: 1,
-          offset,
-          sort: "asc",
-        },
-        (rawResult) => {
-          if (!Array.isArray(rawResult)) {
-            throw new Error(`${transfersName} list is not an array`);
-          }
+      let pageResult: any[];
 
-          rawResult.forEach((transfer) => {
-            if (typeof transfer !== "object") {
-              throw new Error(`${transfersName} item is not an object`);
+      try {
+        pageResult = await this._retrySendAndValidateAsync(
+          {
+            chainId,
+            module: "account",
+            action,
+            address: accountAddress,
+            startblock: nextStartBlock,
+            endblock: endBlockExclusive - 1,
+            page: 1,
+            offset,
+            sort: "asc",
+          },
+          (rawResult) => {
+            if (!Array.isArray(rawResult)) {
+              throw new Error(`${transfersName} list is not an array`);
             }
 
-            const blockNumber = Number(transfer.blockNumber);
-            if (
-              isNaN(blockNumber) ||
-              blockNumber < startBlockInclusive ||
-              blockNumber >= endBlockExclusive
-            ) {
-              throw new Error(
-                `Invalid block number ${blockNumber} for ${transfersName} item: ${transfer.hash}`,
-              );
-            }
+            rawResult.forEach((transfer) => {
+              if (typeof transfer !== "object") {
+                throw new Error(`${transfersName} item is not an object`);
+              }
 
-            validateTransfer(transfer);
-          });
-        },
-      );
+              const blockNumber = Number(transfer.blockNumber);
+              if (
+                isNaN(blockNumber) ||
+                blockNumber < startBlockInclusive ||
+                blockNumber >= endBlockExclusive
+              ) {
+                throw new Error(
+                  `Invalid block number ${blockNumber} for ${transfersName} item: ${transfer.hash}`,
+                );
+              }
+
+              validateTransfer(transfer);
+            });
+          },
+        );
+      } catch (error) {
+        // If result is not an array (API returned error string/object), treat as no data and return empty array
+        if (error instanceof Error && error.message.includes('list is not an array')) {
+          log.warn(`[EtherScan] ${error.message}, treating as empty result for range [${nextStartBlock}, ${endBlockExclusive})`);
+          pageResult = [];
+        } else {
+          throw error;
+        }
+      }
 
       if (pageResult.length < offset) {
         result.push(...pageResult);
