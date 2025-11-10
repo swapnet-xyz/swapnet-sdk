@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info, type IBalancerV3Details, type IClipperLimitOrderDetails } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info, type IBalancerV3Details, type IClipperLimitOrderDetails, type IFluidDetails } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -236,7 +236,21 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.Fluid]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            if (route.details === undefined) {
+                throw new Error(`No details found for Fluid route!`);
+            }
+            const { hasNative } = route.details as IFluidDetails;
+
+            if (hasNative === undefined) {
+                throw new Error(`Invalid Fluid route details!`);
+            }
+            return {
+                source: route.name,
+                address: route.address,
+                hasNative,
+            };
+        },
     },
     [LiquiditySourceUname.BalancerV3]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
