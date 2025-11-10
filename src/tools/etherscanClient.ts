@@ -642,8 +642,11 @@ export class EtherscanClient {
   }
 
   public async isBlockIndexedAsync(chainId: number, blockNumber: number): Promise<boolean> {
+    log.info(`[EtherScan] Checking if block ${blockNumber} is indexed on chain ${chainId}...`);
     try {
       const blockNumberHex = `0x${blockNumber.toString(16)}`;
+      log.debug(`[EtherScan] Block ${blockNumber} hex: ${blockNumberHex}`);
+      
       const result = await this._retrySendAndValidateAsync(
         {
           chainId,
@@ -655,28 +658,45 @@ export class EtherscanClient {
         (result) => {
           // If block is not indexed, result will be null
           if (result === null) {
-            throw new Error(`Block ${blockNumber} is not indexed yet`);
+            // This is the ONLY case where we should return false
+            // Don't throw here, handle it below
+            log.debug(`[EtherScan] API returned null for block ${blockNumber}`);
+            return;
           }
           if (typeof result !== "object") {
+            log.warn(`[EtherScan] Invalid result type for block ${blockNumber}: ${typeof result}`);
             throw new Error(
               `Invalid block object for block ${blockNumber}: ${JSON.stringify(result)}`,
             );
           }
+          log.debug(`[EtherScan] Block ${blockNumber} data received successfully`);
         },
       );
 
+      // If result is null, block is not indexed yet
+      if (result === null) {
+        log.warn(`[EtherScan] ⚠️ Block ${blockNumber} is NOT indexed yet on chain ${chainId}`);
+        return false;
+      }
+
       // Verify the block number matches
       const returnedBlockNumber = parseInt(result.number, 16);
+      log.debug(`[EtherScan] Returned block number: ${returnedBlockNumber}, requested: ${blockNumber}`);
 
       if (returnedBlockNumber !== blockNumber) {
+        log.error(`[EtherScan] Block number mismatch: requested ${blockNumber}, got ${returnedBlockNumber}`);
         throw new Error(
           `Block number mismatch: requested ${blockNumber}, got ${returnedBlockNumber}`,
         );
       }
+      
+      log.info(`[EtherScan] ✅ Block ${blockNumber} is indexed on chain ${chainId}`);
       return true;
     } catch (error) {
-      log.debug(`[EtherScan] Block ${blockNumber} is not indexed: ${error}`);
-      return false;
+      // Re-throw errors that are NOT about block not being indexed
+      // (e.g., network errors, API errors, rate limits, etc.)
+      log.error(`[EtherScan] ❌ Error checking if block ${blockNumber} is indexed on chain ${chainId}: ${error}`);
+      throw error;
     }
   }
 
