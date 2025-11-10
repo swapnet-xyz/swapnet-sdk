@@ -362,9 +362,8 @@ export class EtherscanClient {
       );
     }
 
-    if (!(await this.isBlockIndexedAsync(chainId, endBlockExclusive))) {
-      throw new Error(`End block ${endBlockExclusive} might not be fully indexed`);
-    }
+    // Note: Block indexing check removed - caller should use safety buffer (e.g., latestBlock - 20)
+    // to ensure blocks are fully indexed before querying
 
     let transfersName: string;
     switch (action) {
@@ -664,9 +663,9 @@ export class EtherscanClient {
             return;
           }
           if (typeof result !== "object") {
-            log.warn(`[EtherScan] Invalid result type for block ${blockNumber}: ${typeof result}`);
+            log.warn(`[EtherScan] Invalid result type for block ${blockNumber}: ${typeof result}, value: ${JSON.stringify(result)}`);
             throw new Error(
-              `Invalid block object for block ${blockNumber}: ${JSON.stringify(result)}`,
+              `Invalid block object for block ${blockNumber}: type=${typeof result}, value=${JSON.stringify(result)}`,
             );
           }
           log.debug(`[EtherScan] Block ${blockNumber} data received successfully`);
