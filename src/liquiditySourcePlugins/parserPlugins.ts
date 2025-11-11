@@ -300,4 +300,10 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     [LiquiditySourceUname.AerodromeForkV3]: {
         convertToLiquidityInfo: convertWithTickSpacing,
     },
+    [LiquiditySourceUname.CamelotV3]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.CamelotV4]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
 };
