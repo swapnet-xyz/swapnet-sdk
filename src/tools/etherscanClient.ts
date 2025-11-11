@@ -230,7 +230,7 @@ export class EtherscanClient {
     private readonly _apiKey: string,
     private readonly _waitIntervalMs: number = 250,
     private readonly _maxRetries: number = 3,
-  ) {}
+  ) { }
 
   private async _startProcessingQueueAsync(): Promise<void> {
     if (this._isProcessing) {
@@ -254,14 +254,14 @@ export class EtherscanClient {
         }
 
         const { status, message, result } = body;
-        
+
         // For proxy module endpoints, status and message might be undefined
         // Just check if result exists
         if (result === undefined) {
           reject(new Error("EtherScan response result is undefined"));
           continue;
         }
-        
+
         // If status/message are present, validate them
         if (status !== undefined && message !== undefined) {
           if (status !== "1" || message !== "OK") {
@@ -299,11 +299,11 @@ export class EtherscanClient {
   private async _sendAsync(params: Record<string, any>): Promise<any> {
     // Routescan already includes /v2/ in the base URL, so only append /api
     const path = this._baseUrl.includes('/v2/') ? '/api' : '/v2/api';
-    
+
     const request: IRequest = {
       method: "get",
       baseUrl: this._baseUrl,
-      path, 
+      path,
       headers: {
         accept: "application/json",
       },
@@ -385,55 +385,43 @@ export class EtherscanClient {
     let nextStartBlock = startBlockInclusive;
 
     while (true) {
-      let pageResult: any[];
+      let pageResult: any[] = await this._retrySendAndValidateAsync(
+        {
+          chainId,
+          module: "account",
+          action,
+          address: accountAddress,
+          startblock: nextStartBlock,
+          endblock: endBlockExclusive - 1,
+          page: 1,
+          offset,
+          sort: "asc",
+        },
+        (rawResult) => {
+          if (!Array.isArray(rawResult)) {
+            throw new Error(`${transfersName} list is not an array`);
+          }
 
-      try {
-        pageResult = await this._retrySendAndValidateAsync(
-          {
-            chainId,
-            module: "account",
-            action,
-            address: accountAddress,
-            startblock: nextStartBlock,
-            endblock: endBlockExclusive - 1,
-            page: 1,
-            offset,
-            sort: "asc",
-          },
-          (rawResult) => {
-            if (!Array.isArray(rawResult)) {
-              throw new Error(`${transfersName} list is not an array`);
+          rawResult.forEach((transfer) => {
+            if (typeof transfer !== "object") {
+              throw new Error(`${transfersName} item is not an object`);
             }
 
-            rawResult.forEach((transfer) => {
-              if (typeof transfer !== "object") {
-                throw new Error(`${transfersName} item is not an object`);
-              }
+            const blockNumber = Number(transfer.blockNumber);
+            if (
+              isNaN(blockNumber) ||
+              blockNumber < startBlockInclusive ||
+              blockNumber >= endBlockExclusive
+            ) {
+              throw new Error(
+                `Invalid block number ${blockNumber} for ${transfersName} item: ${transfer.hash}`,
+              );
+            }
 
-              const blockNumber = Number(transfer.blockNumber);
-              if (
-                isNaN(blockNumber) ||
-                blockNumber < startBlockInclusive ||
-                blockNumber >= endBlockExclusive
-              ) {
-                throw new Error(
-                  `Invalid block number ${blockNumber} for ${transfersName} item: ${transfer.hash}`,
-                );
-              }
-
-              validateTransfer(transfer);
-            });
-          },
-        );
-      } catch (error) {
-        // If result is not an array (API returned error string/object), treat as no data and return empty array
-        if (error instanceof Error && error.message.includes('list is not an array')) {
-          log.warn(`[EtherScan] ${error.message}, treating as empty result for range [${nextStartBlock}, ${endBlockExclusive})`);
-          pageResult = [];
-        } else {
-          throw error;
-        }
-      }
+            validateTransfer(transfer);
+          });
+        },
+      );
 
       if (pageResult.length < offset) {
         result.push(...pageResult);
@@ -645,7 +633,7 @@ export class EtherscanClient {
     try {
       const blockNumberHex = `0x${blockNumber.toString(16)}`;
       log.debug(`[EtherScan] Block ${blockNumber} hex: ${blockNumberHex}`);
-      
+
       const result = await this._retrySendAndValidateAsync(
         {
           chainId,
@@ -688,7 +676,7 @@ export class EtherscanClient {
           `Block number mismatch: requested ${blockNumber}, got ${returnedBlockNumber}`,
         );
       }
-      
+
       log.info(`[EtherScan] ✅ Block ${blockNumber} is indexed on chain ${chainId}`);
       return true;
     } catch (error) {
@@ -752,7 +740,7 @@ export class EtherscanClient {
 
       if (Array.isArray(result) && result.length > 0) {
         const tokenInfo = result[0];
-        
+
         // Skip NFTs (ERC721, ERC1155) - they have 0 decimals which breaks price calculations
         const tokenType = tokenInfo.tokenType || "";
         if (tokenType === "ERC721" || tokenType === "ERC1155") {
@@ -764,7 +752,7 @@ export class EtherscanClient {
         // divisor field contains the decimals (as string)
         const decimalsStr = tokenInfo.divisor || tokenInfo.decimals || "18";
         const decimals = parseInt(decimalsStr, 10);
-        
+
         // If decimals is 0 or invalid (likely NFT or error), default to 18
         const finalDecimals = !isNaN(decimals) && decimals > 0 ? decimals : 18;
 
