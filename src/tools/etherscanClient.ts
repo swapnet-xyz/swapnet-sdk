@@ -662,7 +662,7 @@ export class EtherscanClient {
 
       // If result is null, block is not indexed yet
       if (result === null) {
-        log.warn(`[EtherScan] ⚠️ Block ${blockNumber} is NOT indexed yet on chain ${chainId}`);
+        log.warn(`[EtherScan] Block ${blockNumber} is NOT indexed yet on chain ${chainId}`);
         return false;
       }
 
@@ -677,12 +677,12 @@ export class EtherscanClient {
         );
       }
 
-      log.info(`[EtherScan] ✅ Block ${blockNumber} is indexed on chain ${chainId}`);
+      log.info(`[EtherScan] Block ${blockNumber} is indexed on chain ${chainId}`);
       return true;
     } catch (error) {
       // Re-throw errors that are NOT about block not being indexed
       // (e.g., network errors, API errors, rate limits, etc.)
-      log.error(`[EtherScan] ❌ Error checking if block ${blockNumber} is indexed on chain ${chainId}: ${error}`);
+      log.error(`[EtherScan] Error checking if block ${blockNumber} is indexed on chain ${chainId}: ${error}`);
       throw error;
     }
   }
