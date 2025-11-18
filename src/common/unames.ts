@@ -76,6 +76,8 @@ export enum LiquiditySourceUname {
     AerodromeForkV3 = "AerodromeForkV3",
     CamelotV3 = "CamelotV3",
     CamelotV4 = "CamelotV4",
+    Renegade = "Renegade",
+    RenegadeLimitOrder = "LimitOrder-Renegade",
 };
 
 export enum RouterUname {

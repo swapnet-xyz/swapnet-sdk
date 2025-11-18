@@ -171,6 +171,9 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
             };
         },
     },
+    [LiquiditySourceUname.Clipper]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
     [LiquiditySourceUname.ClipperLimitOrder]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
             const details = route.details as IClipperLimitOrderDetails;
@@ -186,9 +189,6 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     },
     [LiquiditySourceUname.BebopOrderbook]: {
         convertToLiquidityInfo: invalidRoute,
-    },
-    [LiquiditySourceUname.Clipper]: {
-        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.SushiswapV2]: {
         convertToLiquidityInfo: convertWithFeeInBps,
@@ -305,5 +305,18 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     },
     [LiquiditySourceUname.CamelotV4]: {
         convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.Renegade]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.RenegadeLimitOrder]: {
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            const details = route.details as IClipperLimitOrderDetails;
+            return {
+                source: route.name,
+                address: route.address,
+                calldata: details.calldata,
+            };
+        },
     },
 };
