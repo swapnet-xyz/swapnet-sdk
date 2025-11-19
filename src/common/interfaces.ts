@@ -67,6 +67,11 @@ export interface IClipperLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
+export interface IRenegadeLimitOrderDetails extends ILimitOrderDetailsBase {
+    routerAddress: string;
+    calldata: string;
+}
+
 export interface ICurveV1Details {
     isLegacy: boolean;
     fromTokenIndex: number;
