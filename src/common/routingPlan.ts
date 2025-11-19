@@ -54,6 +54,12 @@ export interface ClipperLimitOrderInfo extends LiquidityInfoBase {
     calldata: string;
 };
 
+export interface RenegadeLimitOrderInfo extends LiquidityInfoBase {
+    isSellingBaseToken: boolean;
+    priceFixedPoint: bigint;
+    calldata: string;
+};
+
 
 // export interface UniswapV2Info extends LiquidityInfoBase {
 // };
