@@ -68,7 +68,9 @@ export interface IClipperLimitOrderDetails extends ILimitOrderDetailsBase {
 }
 
 export interface IRenegadeLimitOrderDetails extends ILimitOrderDetailsBase {
-    routerAddress: string;
+    poolAddress: string;
+    isSellingBaseToken: boolean;
+    priceFixedPoint: bigint;
     calldata: string;
 }
 
