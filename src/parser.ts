@@ -138,5 +138,5 @@ export const printRoutingPlan = (routingPlan: IRoutingPlan): void => {
 
 export const estimateGasLimit = (routingPlan: IRoutingPlan): bigint => {
     const renegadeSwaps = routingPlan.swaps.filter(s => s.liquidityInfo.source === LiquiditySourceUname.RenegadeLimitOrder);
-    return BigInt(routingPlan.swaps.length) * 150000n + BigInt(renegadeSwaps.length) * 4000000n + 1000000n;
+    return BigInt(routingPlan.swaps.length) * 150000n + BigInt(renegadeSwaps.length) * 6000000n + 1000000n;
 };
