@@ -4,6 +4,7 @@ import Graph from "graph-data-structure";
 import { type IRouteInfoInResponse, type ISwapResponse, } from "./common/interfaces.js";
 import { type Swap, type TokenOperation, type IRoutingPlan, type LiquidityInfo, } from "./common/routingPlan.js";
 import { parserPluginByLiquiditySourceUname } from "./liquiditySourcePlugins/parserPlugins.js";
+import { LiquiditySourceUname } from "./common/unames.js";
 
 
 const toSwap = (route: IRouteInfoInResponse, tokenOpsById: Map<number, TokenOperation>): Swap => {
@@ -133,4 +134,9 @@ export const printRoutingPlan = (routingPlan: IRoutingPlan): void => {
         console.log(`  ${i}: ${swap.liquidityInfo.source} ${swap.liquidityInfo.address}, fromTokenOp: ${tokenOpToIndex.get(swap.fromTokenOp)} ${swap.amountIn},  toTokenOp: ${tokenOpToIndex.get(swap.toTokenOp)} ${swap.amountOut}`);
     });
 
+};
+
+export const estimateGasLimit = (routingPlan: IRoutingPlan): bigint => {
+    const renegadeSwaps = routingPlan.swaps.filter(s => s.liquidityInfo.source === LiquiditySourceUname.RenegadeLimitOrder);
+    return BigInt(routingPlan.swaps.length) * 150000n + BigInt(renegadeSwaps.length) * 4000000n + 1000000n;
 };
