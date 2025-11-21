@@ -1,5 +1,5 @@
 
-import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info, type IBalancerV3Details, type IClipperLimitOrderDetails } from "../index.js";
+import { LiquiditySourceUname, type IBebopLimitOrderDetails, type IRouteInfoInResponse, type ISwapnetLimitOrderDetails, type IUniswapV3Details, type IUniswapV2Details, type LiquidityInfo, type IAerodromeV3Details, type IUniswapV4Details, type IRingswapV2Details, type RingswapV2Info, type ICurveV1Details, type CurveV1Info, type IBalancerV3Details, type IClipperLimitOrderDetails, type IFluidDetails, type IRenegadeLimitOrderDetails, type RenegadeLimitOrderInfo } from "../index.js";
 
 
 const convertWithoutDetails = (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -171,6 +171,9 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
             };
         },
     },
+    [LiquiditySourceUname.Clipper]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
     [LiquiditySourceUname.ClipperLimitOrder]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
             const details = route.details as IClipperLimitOrderDetails;
@@ -186,9 +189,6 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     },
     [LiquiditySourceUname.BebopOrderbook]: {
         convertToLiquidityInfo: invalidRoute,
-    },
-    [LiquiditySourceUname.Clipper]: {
-        convertToLiquidityInfo: convertWithoutDetails,
     },
     [LiquiditySourceUname.SushiswapV2]: {
         convertToLiquidityInfo: convertWithFeeInBps,
@@ -236,7 +236,21 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
         convertToLiquidityInfo: convertWithFee,
     },
     [LiquiditySourceUname.Fluid]: {
-        convertToLiquidityInfo: convertWithoutDetails,
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
+            if (route.details === undefined) {
+                throw new Error(`No details found for Fluid route!`);
+            }
+            const { hasNative } = route.details as IFluidDetails;
+
+            if (hasNative === undefined) {
+                throw new Error(`Invalid Fluid route details!`);
+            }
+            return {
+                source: route.name,
+                address: route.address,
+                hasNative,
+            };
+        },
     },
     [LiquiditySourceUname.BalancerV3]: {
         convertToLiquidityInfo: (route: IRouteInfoInResponse): LiquidityInfo => {
@@ -285,5 +299,30 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
     },
     [LiquiditySourceUname.AerodromeForkV3]: {
         convertToLiquidityInfo: convertWithTickSpacing,
+    },
+    [LiquiditySourceUname.CamelotV3]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.CamelotV4]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.Renegade]: {
+        convertToLiquidityInfo: convertWithoutDetails,
+    },
+    [LiquiditySourceUname.RenegadeLimitOrder]: {
+        convertToLiquidityInfo: (route: IRouteInfoInResponse): RenegadeLimitOrderInfo => {
+            const {
+                isSellingBaseToken,
+                priceFixedPoint,
+                calldata,
+            } = route.details as IRenegadeLimitOrderDetails;
+            return {
+                source: route.name,
+                address: route.address,
+                isSellingBaseToken,
+                priceFixedPoint: BigInt(priceFixedPoint),
+                calldata,
+            };
+        },
     },
 };

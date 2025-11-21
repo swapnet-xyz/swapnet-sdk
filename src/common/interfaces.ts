@@ -34,6 +34,10 @@ export interface IUniswapV4Details {
     isToken0Native: boolean;
 }
 
+export interface IFluidDetails {
+    hasNative: boolean;
+}
+
 export interface IAerodromeV3Details {
     tickSpacing: number;
 }
@@ -63,6 +67,13 @@ export interface IClipperLimitOrderDetails extends ILimitOrderDetailsBase {
     calldata: string;
 }
 
+export interface IRenegadeLimitOrderDetails extends ILimitOrderDetailsBase {
+    poolAddress: string;
+    isSellingBaseToken: boolean;
+    priceFixedPoint: string;
+    calldata: string;
+}
+
 export interface ICurveV1Details {
     isLegacy: boolean;
     fromTokenIndex: number;
@@ -74,7 +85,7 @@ export interface IBalancerV3Details {
     unwrapFromErc4626: boolean;
 }
 
-export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IUniswapV4Details | IAerodromeV3Details | IRingswapV2Details | ILimitOrderDetailsBase | ICurveV1Details | IBalancerV3Details;
+export type IEncodingDetails = IUniswapV2Details | IUniswapV3Details | IUniswapV4Details | IAerodromeV3Details | IRingswapV2Details | ILimitOrderDetailsBase | ICurveV1Details | IBalancerV3Details | IFluidDetails;
 
 export interface IRouteInfoInResponse {
     address: string;

@@ -26,6 +26,10 @@ export interface UniswapV4Info extends LiquidityInfoBase {
     isToken0Native: boolean;
 };
 
+export interface FluidInfo extends LiquidityInfoBase {
+    hasNative: boolean;
+};
+
 export interface UniswapV2Info extends LiquidityInfoBase {
     feeInBps: bigint;
 };
@@ -50,6 +54,12 @@ export interface ClipperLimitOrderInfo extends LiquidityInfoBase {
     calldata: string;
 };
 
+export interface RenegadeLimitOrderInfo extends LiquidityInfoBase {
+    isSellingBaseToken: boolean;
+    priceFixedPoint: bigint;
+    calldata: string;
+};
+
 
 // export interface UniswapV2Info extends LiquidityInfoBase {
 // };
@@ -70,6 +80,7 @@ export type LiquidityInfo = LiquidityInfoBase
     | UniswapV2Info
     | UniswapV3Info
     | UniswapV4Info
+    | FluidInfo
     | AerodromeV3Info
     | RingswapV2Info
     | BebopLimitOrderInfo
