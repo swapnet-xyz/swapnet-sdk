@@ -15,6 +15,7 @@ export const ChainId = {
     Solana: 900,
     Plasma: 9745,
     MonadTestnet: 10143,
+    Monad: 143,
 } as const;
 
 export type ChainName = keyof typeof ChainId;
