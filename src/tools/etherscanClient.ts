@@ -297,7 +297,8 @@ export class EtherscanClient {
   }
 
   private async _sendAsync(params: Record<string, any>): Promise<any> {
-    // Routescan already includes /v2/ in the base URL, so only append /api
+    // Standard Etherscan: https://api.etherscan.io + /v2/api => https://api.etherscan.io/v2/api
+    // Routescan (Plasma): https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan + /api => https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan/api
     const path = this._baseUrl.includes('/v2/') ? '/api' : '/v2/api';
 
     const request: IRequest = {
@@ -687,8 +688,10 @@ export class EtherscanClient {
     }
   }
 
-  public async getLatestBlockNumberAsync(chainId: number): Promise<number> {
-    // Use V2 API: module=proxy&action=eth_blockNumber
+  private async getLatestBlockNumberAsync(chainId: number): Promise<number> {
+    // For Plasma where we have no reliable way to check if a block is indexed,
+    // it is good to use latestBlock - safetyBuffer. For other chains, let's use the original method.
+    // This method is for internal use only. Using plasmascan's proxy module to avoid introducing additional dependency.
     const blockNumberStr = await this._retrySendAndValidateAsync(
       {
         chainId,
