@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@duneanalytics/client-sdk':
+        specifier: ^0.3.4
+        version: 0.3.4
       axios:
         specifier: ^1.6.2
         version: 1.12.2
@@ -47,6 +50,9 @@ packages:
 
   '@adraffy/ens-normalize@1.10.1':
     resolution: {integrity: sha512-96Z2IP3mYmF1Xg2cDm8f1gWGf/HUVedQ3FMifV4kG/PQ4yEP51xDtRAEfhVNt5f/uzpNkZHwWQuUcu6D6K+Ekw==}
+
+  '@duneanalytics/client-sdk@0.3.4':
+    resolution: {integrity: sha512-7SgNy0tHhjUHBkX8BvDPXwzC1dgmEJS67mHFBeB0Hv+kDxa6qsuK7kL+mqQg0W3/v6U0TZKQgkadBhB+A4vjYg==}
 
   '@eslint-community/eslint-utils@4.9.0':
     resolution: {integrity: sha512-ayVFHdtZ+hsq1t2Dy24wCmGXGe4q9Gu3smhLYALJrr473ZH27MsnSL+LKUlimp4BWJqMDMLmPpx/Q9R3OAlL4g==}
@@ -1141,6 +1147,10 @@ packages:
 snapshots:
 
   '@adraffy/ens-normalize@1.10.1': {}
+
+  '@duneanalytics/client-sdk@0.3.4':
+    dependencies:
+      loglevel: 1.9.2
 
   '@eslint-community/eslint-utils@4.9.0(eslint@8.57.1)':
     dependencies:
