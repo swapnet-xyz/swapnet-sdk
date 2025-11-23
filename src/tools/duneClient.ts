@@ -1,5 +1,5 @@
 import log from "loglevel";
-import { DuneClient as DuneSDK, ContentType } from "@duneanalytics/client-sdk";
+import { DuneClient as DuneSDK, ContentType, QueryParameter } from "@duneanalytics/client-sdk";
 
 export interface SwapTransaction {
   tx_hash: string;
@@ -78,8 +78,32 @@ export class DuneClient {
     await this.insertData("trade_amounts", tradeAmounts);
   }
 
-  async markHourProcessed(hourId: number, chainId: number): Promise<void> {
-    await this.insertData("job_management", [{ hour_id: hourId, chain_id: chainId }]);
+  async markHourProcessed(hourTimestamp: number, chainId: number): Promise<void> {
+    await this.insertData("job_management", [{ hour_id: hourTimestamp, chain_id: chainId }]);
+  }
+
+  async getUnprocessedHours(hourTimestamps: number[], chainId: number): Promise<number[]> {
+    if (hourTimestamps.length === 0) {
+      return [];
+    }
+
+    try {
+      const result = await this.client.runQuery({
+        queryId: 6246845,
+        query_parameters: [
+          QueryParameter.text('hours', hourTimestamps.join(',')),
+          QueryParameter.number('chainId', chainId),
+        ],
+      });
+
+      if (result && result.result && result.result.rows) {
+        return result.result.rows.map((row: any) => row.hour_id as number);
+      }
+      return hourTimestamps;
+    } catch (error) {
+      log.warn(`[DuneClient] Error checking unprocessed hours for chain ${chainId}. Assuming all need processing.`, error);
+      return hourTimestamps;
+    }
   }
 }
 

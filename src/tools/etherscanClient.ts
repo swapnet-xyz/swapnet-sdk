@@ -688,32 +688,6 @@ export class EtherscanClient {
     }
   }
 
-  private async getLatestBlockNumberAsync(chainId: number): Promise<number> {
-    // For Plasma where we have no reliable way to check if a block is indexed,
-    // it is good to use latestBlock - safetyBuffer. For other chains, let's use the original method.
-    // This method is for internal use only. Using plasmascan's proxy module to avoid introducing additional dependency.
-    const blockNumberStr = await this._retrySendAndValidateAsync(
-      {
-        chainId,
-        module: "proxy",
-        action: "eth_blockNumber",
-      },
-      (result) => {
-        if (typeof result !== "string" || !result.startsWith("0x")) {
-          throw new Error(`Invalid block number format: ${result}`);
-        }
-      },
-    );
-
-    const blockNumber = parseInt(blockNumberStr, 16);
-    if (isNaN(blockNumber)) {
-      throw new Error(`Failed to parse block number: ${blockNumberStr}`);
-    }
-
-    log.debug(`[EtherScan] Got latest block number: ${blockNumber}`);
-    return blockNumber;
-  }
-
   /**
    * Get token info (symbol, decimals) from Etherscan
    * Uses the token module endpoint: module=token&action=tokeninfo
