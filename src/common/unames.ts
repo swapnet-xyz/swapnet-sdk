@@ -79,6 +79,7 @@ export enum LiquiditySourceUname {
     CamelotV4 = "CamelotV4",
     Renegade = "Renegade",
     RenegadeLimitOrder = "LimitOrder-Renegade",
+    DyorswapV2 = "DyorswapV2",
 };
 
 export enum RouterUname {
