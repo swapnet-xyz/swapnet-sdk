@@ -18,3 +18,7 @@ export * from './simulation.js'
 
 export * from './tools/axiosWrapper.js'
 export * from './tools/etherscanClient.js'
+export * from './tools/alchemyPriceClient.js'
+export * from './tools/priceClient.js'
+export * from './tools/duneClient.js'
+export { DuneClient as DuneSDK, ContentType, ColumnType } from '@duneanalytics/client-sdk'

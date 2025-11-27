@@ -33,7 +33,7 @@ export interface TransactionData {
   timestamp: number;
   to: string | null;
   value: string;
-  truncatedInput: string;
+  inputData: string;
   status: number;
   gasUsed: string;
   gasPrice: string;
@@ -179,7 +179,7 @@ const convertEtherScanTxToTransactionData = (
     timestamp: Number(txData.timeStamp),
     to: txData.to === "" ? null : txData.to.toLowerCase(),
     value: txData.value,
-    truncatedInput: txData.input.slice(0, 10),
+    inputData: txData.input,
     status: Number(txData.txreceipt_status),
     gasUsed: txData.gasUsed,
     gasPrice: txData.gasPrice,
@@ -230,7 +230,7 @@ export class EtherscanClient {
     private readonly _apiKey: string,
     private readonly _waitIntervalMs: number = 250,
     private readonly _maxRetries: number = 3,
-  ) {}
+  ) { }
 
   private async _startProcessingQueueAsync(): Promise<void> {
     if (this._isProcessing) {
@@ -254,23 +254,36 @@ export class EtherscanClient {
         }
 
         const { status, message, result } = body;
-        if (status !== "1" || message !== "OK") {
-          if (
-            status !== "0" &&
-            message !== "No transactions found" &&
-            !(Array.isArray(result) && result.length === 0)
-          ) {
-            reject(
-              new Error(
-                `EtherScan request failed with status ${status}: ${message} ${JSON.stringify(result)}`,
-              ),
-            );
-            continue;
-          }
-        }
+
+        // For proxy module endpoints, status and message might be undefined
+        // Just check if result exists
         if (result === undefined) {
           reject(new Error("EtherScan response result is undefined"));
           continue;
+        }
+
+        // If status/message are present, validate them
+        if (status !== undefined && message !== undefined) {
+          if (status !== "1" || message !== "OK") {
+            if (
+              status !== "0" &&
+              message !== "No transactions found" &&
+              !(Array.isArray(result) && result.length === 0)
+            ) {
+              reject(
+                new Error(
+                  `EtherScan request failed with status ${status}: ${message} ${JSON.stringify(result)}`,
+                ),
+              );
+              continue;
+            }
+
+            // Normalize "No transactions found" to empty array
+            if (status === "0" && message === "No transactions found") {
+              resolve([]);
+              continue;
+            }
+          }
         }
 
         resolve(result);
@@ -284,10 +297,14 @@ export class EtherscanClient {
   }
 
   private async _sendAsync(params: Record<string, any>): Promise<any> {
+    // Standard Etherscan: https://api.etherscan.io + /v2/api => https://api.etherscan.io/v2/api
+    // Routescan (Plasma): https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan + /api => https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan/api
+    const path = this._baseUrl.includes('/v2/') ? '/api' : '/v2/api';
+
     const request: IRequest = {
       method: "get",
       baseUrl: this._baseUrl,
-      path: "/v2/api",
+      path,
       headers: {
         accept: "application/json",
       },
@@ -346,9 +363,8 @@ export class EtherscanClient {
       );
     }
 
-    if (!(await this.isBlockIndexedAsync(chainId, endBlockExclusive))) {
-      throw new Error(`End block ${endBlockExclusive} might not be fully indexed`);
-    }
+    // Note: Block indexing check removed - caller should use safety buffer (e.g., latestBlock - 20)
+    // to ensure blocks are fully indexed before querying
 
     let transfersName: string;
     switch (action) {
@@ -613,34 +629,141 @@ export class EtherscanClient {
     return Number(blockNumberStr);
   }
 
+  public async getLatestBlockNumberAsync(chainId: number): Promise<number> {
+    const blockNumberHex = await this._retrySendAndValidateAsync(
+      {
+        chainId,
+        module: "proxy",
+        action: "eth_blockNumber",
+      },
+      (result) => {
+        if (typeof result !== "string" || !result.startsWith("0x")) {
+          throw new Error(`Invalid block number hex: ${result}`);
+        }
+      },
+    );
+
+    const blockNumber = parseInt(blockNumberHex, 16);
+    log.debug(`[EtherScan] Got latest block number: ${blockNumber}`);
+    return blockNumber;
+  }
+
   public async isBlockIndexedAsync(chainId: number, blockNumber: number): Promise<boolean> {
+    log.info(`[EtherScan] Checking if block ${blockNumber} is indexed on chain ${chainId}...`);
     try {
+      const blockNumberHex = `0x${blockNumber.toString(16)}`;
+      log.debug(`[EtherScan] Block ${blockNumber} hex: ${blockNumberHex}`);
+
       const result = await this._retrySendAndValidateAsync(
         {
           chainId,
-          module: "block",
-          action: "getblockreward",
-          blockno: blockNumber,
+          module: "proxy",
+          action: "eth_getBlockByNumber",
+          tag: blockNumberHex,
+          boolean: "true", // Return full transaction objects
         },
         (result) => {
+          // If block is not indexed, result will be null
+          if (result === null) {
+            // This is the ONLY case where we should return false
+            // Don't throw here, handle it below
+            log.debug(`[EtherScan] API returned null for block ${blockNumber}`);
+            return;
+          }
           if (typeof result !== "object") {
+            log.warn(`[EtherScan] Invalid result type for block ${blockNumber}: ${typeof result}, value: ${JSON.stringify(result)}`);
             throw new Error(
-              `Invalid blockReward object for block ${blockNumber}: ${JSON.stringify(result)}`,
+              `Invalid block object for block ${blockNumber}: type=${typeof result}, value=${JSON.stringify(result)}`,
             );
+          }
+          log.debug(`[EtherScan] Block ${blockNumber} data received successfully`);
+        },
+      );
+
+      // If result is null, block is not indexed yet
+      if (result === null) {
+        log.warn(`[EtherScan] Block ${blockNumber} is NOT indexed yet on chain ${chainId}`);
+        return false;
+      }
+
+      // Verify the block number matches
+      const returnedBlockNumber = parseInt(result.number, 16);
+      log.debug(`[EtherScan] Returned block number: ${returnedBlockNumber}, requested: ${blockNumber}`);
+
+      if (returnedBlockNumber !== blockNumber) {
+        log.error(`[EtherScan] Block number mismatch: requested ${blockNumber}, got ${returnedBlockNumber}`);
+        throw new Error(
+          `Block number mismatch: requested ${blockNumber}, got ${returnedBlockNumber}`,
+        );
+      }
+
+      log.info(`[EtherScan] Block ${blockNumber} is indexed on chain ${chainId}`);
+      return true;
+    } catch (error) {
+      // Re-throw errors that are NOT about block not being indexed
+      // (e.g., network errors, API errors, rate limits, etc.)
+      log.error(`[EtherScan] Error checking if block ${blockNumber} is indexed on chain ${chainId}: ${error}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Get token info (symbol, decimals) from Etherscan
+   * Uses the token module endpoint: module=token&action=tokeninfo
+   */
+  public async getTokenInfoAsync(
+    chainId: number,
+    contractAddress: string,
+  ): Promise<{ symbol: string; decimals: number } | null> {
+    try {
+      console.log("getting token info for", contractAddress);
+      const result = await this._retrySendAndValidateAsync(
+        {
+          chainId,
+          module: "token",
+          action: "tokeninfo",
+          contractaddress: contractAddress,
+        },
+        (result) => {
+          // Tokeninfo returns an array with one item
+          if (!Array.isArray(result) || result.length === 0) {
+            throw new Error(`Token info not found for ${contractAddress}`);
           }
         },
       );
 
-      const { blockNumber: blockNumberStr, timeStamp } = result;
-      if (Number(blockNumberStr) !== blockNumber || timeStamp === null) {
-        throw new Error(
-          `Invalid blockReward object for block ${blockNumber}: ${JSON.stringify(result)}`,
+      console.log("token info", result);
+
+      if (Array.isArray(result) && result.length > 0) {
+        const tokenInfo = result[0];
+
+        // Skip NFTs (ERC721, ERC1155) - they have 0 decimals which breaks price calculations
+        const tokenType = tokenInfo.tokenType || "";
+        if (tokenType === "ERC721" || tokenType === "ERC1155") {
+          log.debug(`[EtherScan] Skipping NFT token ${contractAddress} (type: ${tokenType})`);
+          return null;
+        }
+
+        const symbol = tokenInfo.symbol || tokenInfo.tokenName || "UNKNOWN";
+        // divisor field contains the decimals (as string)
+        const decimalsStr = tokenInfo.divisor || tokenInfo.decimals || "18";
+        const decimals = parseInt(decimalsStr, 10);
+
+        // If decimals is 0 or invalid (likely NFT or error), default to 18
+        const finalDecimals = !isNaN(decimals) && decimals > 0 ? decimals : 18;
+
+        log.debug(
+          `[EtherScan] Got token info for ${contractAddress}: ${symbol} (${finalDecimals} decimals)`,
         );
+
+        return { symbol, decimals: finalDecimals };
       }
-      return true;
+
+      return null;
     } catch (error) {
-      log.debug(`[EtherScan] Block ${blockNumber} is not indexed: ${error}`);
-      return false;
+      console.log("failed to get token info for", contractAddress, error);
+      log.debug(`[EtherScan] Failed to get token info for ${contractAddress}:`, error);
+      return null;
     }
   }
 }
