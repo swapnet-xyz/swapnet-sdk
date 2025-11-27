@@ -1,5 +1,15 @@
 import log from "loglevel";
+import axios from "axios";
 import { DuneClient as DuneSDK, ContentType } from "@duneanalytics/client-sdk";
+import fs from "fs/promises";
+
+const DUNE_API_BASE_URL = "https://api.dune.com/api/v1";
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 5000;
+
+async function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 export interface SwapTransaction {
   tx_hash: string;
@@ -22,6 +32,7 @@ export interface TradeAmount {
 export class DuneClient {
   private readonly client: DuneSDK;
   private readonly namespace: string;
+  private readonly apiKey: string;
 
   constructor(apiKey: string, namespace: string) {
     if (!apiKey) {
@@ -32,6 +43,7 @@ export class DuneClient {
     }
     this.client = new DuneSDK(apiKey);
     this.namespace = namespace;
+    this.apiKey = apiKey;
   }
 
   async insertData(tableName: string, data: any[]): Promise<void> {
@@ -71,6 +83,75 @@ export class DuneClient {
     }
 
     await this.insertData("trade_amounts", tradeAmounts);
+  }
+
+  async uploadCSV(csvFilePath: string, tableName: string): Promise<void> {
+    try {
+      const csvContent = await fs.readFile(csvFilePath, "utf8");
+
+      let lastError: Error | null = null;
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        try {
+          await this.uploadCSVWithRetry(csvContent, tableName);
+          return;
+        } catch (error) {
+          lastError = error as Error;
+          log.error(`Attempt ${attempt}/${MAX_RETRIES} failed:`, error);
+
+          if (attempt < MAX_RETRIES) {
+            const delay = RETRY_DELAY_MS * attempt;
+            await sleep(delay);
+          }
+        }
+      }
+
+      throw new Error(`Failed to upload after ${MAX_RETRIES} attempts: ${lastError?.message}`);
+    } catch (error) {
+      log.error(`Error uploading ${csvFilePath}:`, error);
+      throw error;
+    }
+  }
+
+  private async uploadCSVWithRetry(
+    csvContent: string,
+    tableName: string,
+  ): Promise<void> {
+    const url = `${DUNE_API_BASE_URL}/table/upload/csv`;
+
+    const payload = {
+      namespace: this.namespace,
+      data: csvContent,
+      table_name: tableName,
+      description: `Analytics data upload - ${new Date().toISOString()}`,
+      is_private: false,
+    };
+
+    const response = await axios.post(url, payload, {
+      headers: {
+        "X-DUNE-API-KEY": this.apiKey,
+        "Content-Type": "application/json",
+      },
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+      timeout: 300000,
+    });
+
+    if (response.status !== 200 && response.status !== 201) {
+      throw new Error(
+        `Dune API returned status ${response.status}: ${JSON.stringify(response.data)}`,
+      );
+    }
+  }
+
+  async uploadMultipleCSVs(csvFilePaths: string[], tableName: string): Promise<void> {
+    for (let i = 0; i < csvFilePaths.length; i++) {
+      const filePath = csvFilePaths[i];
+      await this.uploadCSV(filePath, tableName);
+
+      if (i < csvFilePaths.length - 1) {
+        await sleep(2000);
+      }
+    }
   }
 }
 

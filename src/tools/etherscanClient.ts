@@ -629,6 +629,25 @@ export class EtherscanClient {
     return Number(blockNumberStr);
   }
 
+  public async getLatestBlockNumberAsync(chainId: number): Promise<number> {
+    const blockNumberHex = await this._retrySendAndValidateAsync(
+      {
+        chainId,
+        module: "proxy",
+        action: "eth_blockNumber",
+      },
+      (result) => {
+        if (typeof result !== "string" || !result.startsWith("0x")) {
+          throw new Error(`Invalid block number hex: ${result}`);
+        }
+      },
+    );
+
+    const blockNumber = parseInt(blockNumberHex, 16);
+    log.debug(`[EtherScan] Got latest block number: ${blockNumber}`);
+    return blockNumber;
+  }
+
   public async isBlockIndexedAsync(chainId: number, blockNumber: number): Promise<boolean> {
     log.info(`[EtherScan] Checking if block ${blockNumber} is indexed on chain ${chainId}...`);
     try {
