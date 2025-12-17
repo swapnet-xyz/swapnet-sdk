@@ -364,8 +364,9 @@ export class EtherscanClient {
       );
     }
 
-    // Note: Block indexing check removed - caller should use safety buffer (e.g., latestBlock - 20)
-    // to ensure blocks are fully indexed before querying
+    if (!(await this.isBlockIndexedAsync(chainId, endBlockExclusive))) {
+      throw new Error(`End block ${endBlockExclusive} might not be fully indexed`);
+    }
 
     let transfersName: string;
     switch (action) {
@@ -651,15 +652,12 @@ export class EtherscanClient {
 
   public async isBlockIndexedAsync(chainId: number, blockNumber: number): Promise<boolean> {
     const SAFETY_BUFFER = 20;
-
-    // For Plasma we have no reliable way to check if a block is indexed
-    // Use latestBlock - safetyBuffer approach instead
     if (chainId === ChainId.Plasma) {
       try {
         const latestBlock = await this.getLatestBlockNumberAsync(chainId);
         const safeBlock = latestBlock - SAFETY_BUFFER;
         const isIndexed = blockNumber <= safeBlock;
-        
+
         return isIndexed;
       } catch (error) {
         log.error(`[EtherScan] Error checking if block ${blockNumber} is indexed on Plasma: ${error}`);
@@ -667,61 +665,33 @@ export class EtherscanClient {
       }
     }
 
-    // For other chains, use the original method with eth_getBlockByNumber
     try {
-      const blockNumberHex = `0x${blockNumber.toString(16)}`;
-      log.debug(`[EtherScan] Block ${blockNumber} hex: ${blockNumberHex}`);
-
       const result = await this._retrySendAndValidateAsync(
         {
           chainId,
-          module: "proxy",
-          action: "eth_getBlockByNumber",
-          tag: blockNumberHex,
-          boolean: "true", // Return full transaction objects
+          module: "block",
+          action: "getblockreward",
+          blockno: blockNumber,
         },
         (result) => {
-          // If block is not indexed, result will be null
-          if (result === null) {
-            // This is the ONLY case where we should return false
-            // Don't throw here, handle it below
-            log.debug(`[EtherScan] API returned null for block ${blockNumber}`);
-            return;
-          }
           if (typeof result !== "object") {
-            log.warn(`[EtherScan] Invalid result type for block ${blockNumber}: ${typeof result}, value: ${JSON.stringify(result)}`);
             throw new Error(
-              `Invalid block object for block ${blockNumber}: type=${typeof result}, value=${JSON.stringify(result)}`,
+              `Invalid blockReward object for block ${blockNumber}: ${JSON.stringify(result)}`,
             );
           }
-          log.debug(`[EtherScan] Block ${blockNumber} data received successfully`);
         },
       );
 
-      // If result is null, block is not indexed yet
-      if (result === null) {
-        log.warn(`[EtherScan] Block ${blockNumber} is NOT indexed yet on chain ${chainId}`);
-        return false;
-      }
-
-      // Verify the block number matches
-      const returnedBlockNumber = parseInt(result.number, 16);
-      log.debug(`[EtherScan] Returned block number: ${returnedBlockNumber}, requested: ${blockNumber}`);
-
-      if (returnedBlockNumber !== blockNumber) {
-        log.error(`[EtherScan] Block number mismatch: requested ${blockNumber}, got ${returnedBlockNumber}`);
+      const { blockNumber: blockNumberStr, timeStamp } = result;
+      if (Number(blockNumberStr) !== blockNumber || timeStamp === null) {
         throw new Error(
-          `Block number mismatch: requested ${blockNumber}, got ${returnedBlockNumber}`,
+          `Invalid blockReward object for block ${blockNumber}: ${JSON.stringify(result)}`,
         );
       }
-
-      log.info(`[EtherScan] Block ${blockNumber} is indexed on chain ${chainId}`);
       return true;
     } catch (error) {
-      // Re-throw errors that are NOT about block not being indexed
-      // (e.g., network errors, API errors, rate limits, etc.)
-      log.error(`[EtherScan] Error checking if block ${blockNumber} is indexed on chain ${chainId}: ${error}`);
-      throw error;
+      log.debug(`[EtherScan] Block ${blockNumber} is not indexed: ${error}`);
+      return false;
     }
   }
 
