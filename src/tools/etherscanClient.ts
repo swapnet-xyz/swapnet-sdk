@@ -2,6 +2,7 @@ import crypto from "crypto";
 import log from "loglevel";
 import { axiosWrapper, type IRequest } from "./axiosWrapper.js";
 import { sleep } from "../utils.js";
+import { ChainId } from "../common/unames.js";
 
 type ResolveFunc = (etherScanResult: any) => void;
 type RejectFunc = (error: Error) => void;
@@ -33,7 +34,7 @@ export interface TransactionData {
   timestamp: number;
   to: string | null;
   value: string;
-  truncatedInput: string;
+  inputData: string;
   status: number;
   gasUsed: string;
   gasPrice: string;
@@ -179,7 +180,7 @@ const convertEtherScanTxToTransactionData = (
     timestamp: Number(txData.timeStamp),
     to: txData.to === "" ? null : txData.to.toLowerCase(),
     value: txData.value,
-    truncatedInput: txData.input.slice(0, 10),
+    inputData: txData.input,
     status: Number(txData.txreceipt_status),
     gasUsed: txData.gasUsed,
     gasPrice: txData.gasPrice,
@@ -230,7 +231,7 @@ export class EtherscanClient {
     private readonly _apiKey: string,
     private readonly _waitIntervalMs: number = 250,
     private readonly _maxRetries: number = 3,
-  ) {}
+  ) { }
 
   private async _startProcessingQueueAsync(): Promise<void> {
     if (this._isProcessing) {
@@ -254,23 +255,36 @@ export class EtherscanClient {
         }
 
         const { status, message, result } = body;
-        if (status !== "1" || message !== "OK") {
-          if (
-            status !== "0" &&
-            message !== "No transactions found" &&
-            !(Array.isArray(result) && result.length === 0)
-          ) {
-            reject(
-              new Error(
-                `EtherScan request failed with status ${status}: ${message} ${JSON.stringify(result)}`,
-              ),
-            );
-            continue;
-          }
-        }
+
+        // For proxy module endpoints, status and message might be undefined
+        // Just check if result exists
         if (result === undefined) {
           reject(new Error("EtherScan response result is undefined"));
           continue;
+        }
+
+        // If status/message are present, validate them
+        if (status !== undefined && message !== undefined) {
+          if (status !== "1" || message !== "OK") {
+            if (
+              status !== "0" &&
+              message !== "No transactions found" &&
+              !(Array.isArray(result) && result.length === 0)
+            ) {
+              reject(
+                new Error(
+                  `EtherScan request failed with status ${status}: ${message} ${JSON.stringify(result)}`,
+                ),
+              );
+              continue;
+            }
+
+            // Normalize "No transactions found" to empty array
+            if (status === "0" && message === "No transactions found") {
+              resolve([]);
+              continue;
+            }
+          }
         }
 
         resolve(result);
@@ -284,10 +298,14 @@ export class EtherscanClient {
   }
 
   private async _sendAsync(params: Record<string, any>): Promise<any> {
+    // Standard Etherscan: https://api.etherscan.io + /v2/api => https://api.etherscan.io/v2/api
+    // Routescan (Plasma): https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan + /api => https://api.routescan.io/v2/network/mainnet/evm/9745/etherscan/api
+    const path = this._baseUrl.includes('/v2/') ? '/api' : '/v2/api';
+
     const request: IRequest = {
       method: "get",
       baseUrl: this._baseUrl,
-      path: "/v2/api",
+      path,
       headers: {
         accept: "application/json",
       },
@@ -613,7 +631,40 @@ export class EtherscanClient {
     return Number(blockNumberStr);
   }
 
+  private async getLatestBlockNumberAsync(chainId: number): Promise<number> {
+    const blockNumberHex = await this._retrySendAndValidateAsync(
+      {
+        chainId,
+        module: "proxy",
+        action: "eth_blockNumber",
+      },
+      (result) => {
+        if (typeof result !== "string" || !result.startsWith("0x")) {
+          throw new Error(`Invalid block number hex: ${result}`);
+        }
+      },
+    );
+
+    const blockNumber = parseInt(blockNumberHex, 16);
+    log.debug(`[EtherScan] Got latest block number: ${blockNumber}`);
+    return blockNumber;
+  }
+
   public async isBlockIndexedAsync(chainId: number, blockNumber: number): Promise<boolean> {
+    const SAFETY_BUFFER = 20;
+    if (chainId === ChainId.Plasma) {
+      try {
+        const latestBlock = await this.getLatestBlockNumberAsync(chainId);
+        const safeBlock = latestBlock - SAFETY_BUFFER;
+        const isIndexed = blockNumber <= safeBlock;
+
+        return isIndexed;
+      } catch (error) {
+        log.error(`[EtherScan] Error checking if block ${blockNumber} is indexed on Plasma: ${error}`);
+        throw error;
+      }
+    }
+
     try {
       const result = await this._retrySendAndValidateAsync(
         {
@@ -641,6 +692,66 @@ export class EtherscanClient {
     } catch (error) {
       log.debug(`[EtherScan] Block ${blockNumber} is not indexed: ${error}`);
       return false;
+    }
+  }
+
+  /**
+   * Get token info (symbol, decimals) from Etherscan
+   * Uses the token module endpoint: module=token&action=tokeninfo
+   */
+  public async getTokenInfoAsync(
+    chainId: number,
+    contractAddress: string,
+  ): Promise<{ symbol: string; decimals: number } | null> {
+    try {
+      console.log("getting token info for", contractAddress);
+      const result = await this._retrySendAndValidateAsync(
+        {
+          chainId,
+          module: "token",
+          action: "tokeninfo",
+          contractaddress: contractAddress,
+        },
+        (result) => {
+          // Tokeninfo returns an array with one item
+          if (!Array.isArray(result) || result.length === 0) {
+            throw new Error(`Token info not found for ${contractAddress}`);
+          }
+        },
+      );
+
+      console.log("token info", result);
+
+      if (Array.isArray(result) && result.length > 0) {
+        const tokenInfo = result[0];
+
+        // Skip NFTs (ERC721, ERC1155) - they have 0 decimals which breaks price calculations
+        const tokenType = tokenInfo.tokenType || "";
+        if (tokenType === "ERC721" || tokenType === "ERC1155") {
+          log.debug(`[EtherScan] Skipping NFT token ${contractAddress} (type: ${tokenType})`);
+          return null;
+        }
+
+        const symbol = tokenInfo.symbol || tokenInfo.tokenName || "UNKNOWN";
+        // divisor field contains the decimals (as string)
+        const decimalsStr = tokenInfo.divisor || tokenInfo.decimals || "18";
+        const decimals = parseInt(decimalsStr, 10);
+
+        // If decimals is 0 or invalid (likely NFT or error), default to 18
+        const finalDecimals = !isNaN(decimals) && decimals > 0 ? decimals : 18;
+
+        log.debug(
+          `[EtherScan] Got token info for ${contractAddress}: ${symbol} (${finalDecimals} decimals)`,
+        );
+
+        return { symbol, decimals: finalDecimals };
+      }
+
+      return null;
+    } catch (error) {
+      console.log("failed to get token info for", contractAddress, error);
+      log.debug(`[EtherScan] Failed to get token info for ${contractAddress}:`, error);
+      return null;
     }
   }
 }
