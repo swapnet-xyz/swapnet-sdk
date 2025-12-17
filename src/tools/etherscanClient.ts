@@ -2,6 +2,7 @@ import crypto from "crypto";
 import log from "loglevel";
 import { axiosWrapper, type IRequest } from "./axiosWrapper.js";
 import { sleep } from "../utils.js";
+import { ChainId } from "../common/unames.js";
 
 type ResolveFunc = (etherScanResult: any) => void;
 type RejectFunc = (error: Error) => void;
@@ -629,7 +630,7 @@ export class EtherscanClient {
     return Number(blockNumberStr);
   }
 
-  public async getLatestBlockNumberAsync(chainId: number): Promise<number> {
+  private async getLatestBlockNumberAsync(chainId: number): Promise<number> {
     const blockNumberHex = await this._retrySendAndValidateAsync(
       {
         chainId,
@@ -649,7 +650,24 @@ export class EtherscanClient {
   }
 
   public async isBlockIndexedAsync(chainId: number, blockNumber: number): Promise<boolean> {
-    log.info(`[EtherScan] Checking if block ${blockNumber} is indexed on chain ${chainId}...`);
+    const SAFETY_BUFFER = 20;
+
+    // For Plasma we have no reliable way to check if a block is indexed
+    // Use latestBlock - safetyBuffer approach instead
+    if (chainId === ChainId.Plasma) {
+      try {
+        const latestBlock = await this.getLatestBlockNumberAsync(chainId);
+        const safeBlock = latestBlock - SAFETY_BUFFER;
+        const isIndexed = blockNumber <= safeBlock;
+        
+        return isIndexed;
+      } catch (error) {
+        log.error(`[EtherScan] Error checking if block ${blockNumber} is indexed on Plasma: ${error}`);
+        throw error;
+      }
+    }
+
+    // For other chains, use the original method with eth_getBlockByNumber
     try {
       const blockNumberHex = `0x${blockNumber.toString(16)}`;
       log.debug(`[EtherScan] Block ${blockNumber} hex: ${blockNumberHex}`);
