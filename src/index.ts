@@ -18,5 +18,3 @@ export * from './simulation.js'
 
 export * from './tools/axiosWrapper.js'
 export * from './tools/etherscanClient.js'
-export * from './tools/alchemyPriceClient.js'
-export * from './tools/priceClient.js'

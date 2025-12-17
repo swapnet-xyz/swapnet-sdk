@@ -5,7 +5,7 @@
     "moduleResolution": "nodenext",
     "strict": true,
     "declaration": true,
-    "emitDeclarationOnly": false,
+    "emitDeclarationOnly": true,
     "sourceMap": false,   // enable if publishing source code
     "declarationMap": false,  // enable if publishing source code
     "verbatimModuleSyntax": true,
