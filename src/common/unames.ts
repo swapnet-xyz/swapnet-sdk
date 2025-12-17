@@ -15,6 +15,7 @@ export const ChainId = {
     Solana: 900,
     Plasma: 9745,
     MonadTestnet: 10143,
+    Monad: 143,
 } as const;
 
 export type ChainName = keyof typeof ChainId;
@@ -78,6 +79,7 @@ export enum LiquiditySourceUname {
     CamelotV4 = "CamelotV4",
     Renegade = "Renegade",
     RenegadeLimitOrder = "LimitOrder-Renegade",
+    DyorswapV2 = "DyorswapV2",
 };
 
 export enum RouterUname {

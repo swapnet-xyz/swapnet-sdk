@@ -81,6 +81,7 @@ export class SwapnetClient {
         router: RouterUname | undefined = undefined,
         includeCalldata: boolean | undefined = undefined,
         userAddress: string | undefined = undefined,
+        recipientAddress: string | undefined = undefined,
         slippageTolerance: number | undefined = undefined,
     ): Promise<{
         succeeded: true,
@@ -115,6 +116,7 @@ export class SwapnetClient {
             (router !== undefined ? `&router=${router}` : "") +
             (includeCalldata !== undefined ? `&includeCalldata=${includeCalldata}` : "") +
             (userAddress !== undefined ? `&userAddress=${userAddress}` : "") +
+            (recipientAddress !== undefined ? `&recipientAddress=${recipientAddress}` : "") +
             (slippageTolerance !== undefined ? `&slippageTolerance=${slippageTolerance}` : "");
 
         const response = await fetch(url);

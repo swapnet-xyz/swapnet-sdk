@@ -325,4 +325,7 @@ export const parserPluginByLiquiditySourceUname: Record<LiquiditySourceUname, IL
             };
         },
     },
+    [LiquiditySourceUname.DyorswapV2]: {
+        convertToLiquidityInfo: convertWithFeeInBps,
+    },
 };
