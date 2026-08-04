@@ -10,6 +10,7 @@ export const ChainId = {
     Bsc: 56,
     Polygon: 137,
     Optimism: 10,
+    Robinhood: 4663,
     Katana: 747474,
     HyperEvm: 999,
     Solana: 900,
